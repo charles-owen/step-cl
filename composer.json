@@ -1,0 +1,24 @@
+{
+  "name" : "cl/step",
+  "description": "CourseLib step assignment component.",
+  "type" : "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Charles B. Owen",
+      "email": "cbowen@msu.edu"
+    }
+  ],
+  "autoload":{
+    "psr-4": {
+      "CL\\Users\\": "src/Step"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/charles-owen/step-cl.git"
+    }
+  ]
+}
+
