@@ -2,7 +2,7 @@
   "name": "step-cl",
   "version": "0.0.1",
   "description": "CourseLib Website step assignment components",
-//  "main": "js/Grades/Grades.js",
+  "main": "js/Step/Step.js",
   "keywords": [
     "Education",
     "LTI"
