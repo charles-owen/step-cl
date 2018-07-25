@@ -6,16 +6,17 @@
 namespace CL\Step;
 
 use CL\Course\SectionStatus;
+use CL\Users\User;
 
 /** Defines a section in a step assignment 
  *
  * A section can be a tutorial page, a task page, or a quiz.
  */
 class StepSection {
-	const SECTION = 0;		//!< Indicates this section is a regular section
-	const TASK = 1;			//!< Indicates this section is a task
-	const QUIZ = 2;			//!< Indicates this section is a quiz
-	const VIDEO = 3;		//!< Indicates this section is a video
+	const SECTION = 'S';    ///< Indicates this section is a regular section
+	const TASK = 'T';		///< Indicates this section is a task
+	const QUIZ = 'Q';		///< Indicates this section is a quiz
+	const VIDEO = 'V';		///< Indicates this section is a video
 
     /**
      * Constructor
@@ -32,40 +33,85 @@ class StepSection {
         $this->status = SectionStatus::NOTVISITED;
 	}
 
-	/** Reference to next section in order */	
-	public function get_next() {return $this->next;}
-	
-	/** \copydoc get_next() 
-	 * \param $next Next section to set */
-	public function set_next($next) {$this->next = $next;}
-	
-	/** Reference to previous section in order */
-	public function get_prev() {return $this->prev;}
-	
-	/** \copydoc get_prev() 
-	 * \param $prev Previous section to set */
-	public function set_prev($prev) {$this->prev = $prev;}
+	/**
+	 * Property get magic method
+	 * @param string $key Property name
+	 *
+	 * Properties supported:
+	 * rootDir - Site root directory
+	 *
+	 * @return null|string
+	 */
+	public function __get($key) {
+		switch($key) {
+			case 'name':
+				return $this->name;
+
+			case 'tag':
+				return $this->tag;
+
+			case 'type':
+				return $this->type;
+
+			case 'next':
+				return $this->next;
+
+			case 'prev':
+				return $this->prev;
+
+			case 'url':
+				return $this->step->site->root . '/cl/step/section/' . $this->step->tag . '/' . $this->tag;
+
+
+			default:
+				$trace = debug_backtrace();
+				trigger_error(
+					'Undefined property ' . $key .
+					' in ' . $trace[0]['file'] .
+					' on line ' . $trace[0]['line'],
+					E_USER_NOTICE);
+				return null;
+		}
+	}
+
+	/**
+	 * Property set magic method
+	 * @param string $key Property name
+	 * @param mixed $value Value to set
+	 */
+	public function __set($key, $value) {
+		switch($key) {
+			case 'next':
+				$this->next = $value;
+				break;
+
+			case 'prev':
+				$this->prev = $value;
+				break;
+
+			default:
+				$trace = debug_backtrace();
+				trigger_error(
+					'Undefined property ' . $key .
+					' in ' . $trace[0]['file'] .
+					' on line ' . $trace[0]['line'],
+					E_USER_NOTICE);
+				break;
+		}
+
+	}
+
 	
 	/** StepSection status 
 	 *
 	 * The possible section status is NOTVISITED, VISITED, DONE
 	 * \param $status New section status */
-	public function set_status($status) {
+	public function set_status($status, $look, $access) {
         $this->status = $status;
+        $this->look = $look;
+        $this->access = $access;
     }
-	
-	/** %Section tag
-	 * Every section has a short tag (name) that is the base 
-	 * name of the section in the step directory and is used
-	 * as the key for the section in all tables. 
-	 * \returns StepSection tag */
-	public function get_tag() {return $this->tag;}
-	
-	/** StepSection name \returns StepSection name */
-	public function get_name() {return $this->name;}
-	
-	/** StepSection type \returns StepSection type */
-	public function get_type() {return $this->type;}
+
 	
 	/** Number of points for a quiz */
 	public function get_numpoints() {return $this->numpoints;}
@@ -76,22 +122,18 @@ class StepSection {
 	
 	/** %Section is done \returns TRUE if section is done */
 	public function is_done() {
-        $s = self::DONE;
-        return $this->status == self::DONE;
+        return $this->status == SectionStatus::DONE;
     }
 	
 	/** Flag a task as VISITED or DONE
      * @param User $user The user we are flagging
-	 * @param $status Task status to set (VISITED or DONE)
-     * @param $time The time of the flagging, default is time()
+	 * @param string $status Task status to set (VISITED or DONE)
+     * @param int $time The time of the flagging, default is time()
      */
-	public function flag(\User $user, $status, $time=null) {
-        if($time === null) {
-            $time = time();
-        }
-
+	public function flag(User $user, $status, $time) {
 		$this->status = $status;
-        parent::set_section_status($user, $this->step, $this->tag, $status, $time);
+		$table = new SectionStatus($this->step->site->db);
+		$table->set($user, $this->step->tag, $this->tag, $status, $time);
 	}
 	
 	/** Flag this section as having been visited 
@@ -99,10 +141,36 @@ class StepSection {
 	 * status. This function will only set the section as 
 	 * visited if it has not been previously visited. 
 	 */
-	public function flag_visited(\User $user, $time=null) {
-		if($this->status === self::NOTVISITED) {
-			$this->flag($user, self::VISITED, $time);
+	public function flag_visited(User $user, $time) {
+		if($this->status === SectionStatus::NOTVISITED) {
+			$this->flag($user, SectionStatus::VISITED, $time);
 		}
+	}
+
+	/**
+	 * Open the step page as a file.
+	 * @return bool|resource File handle
+	 */
+	public function openFile() {
+		return @fopen($this->step->site->rootDir .
+			'/' . $this->step->url .
+			'/' . $this->tag . '.php', "r");
+	}
+
+	/**
+	 * Create data suitable for JSON to send to runtime
+	 * @return array
+	 */
+	public function data() {
+		return [
+			'name'=>$this->name,
+			'type'=>$this->type,
+			'tag'=>$this->tag,
+			'status'=>$this->status,
+			'look'=>$this->look,
+			'access'=>$this->access,
+			'url'=>$this->__get('url')
+		];
 	}
 	
 	/** Step this section is assocated with 
@@ -115,7 +183,9 @@ class StepSection {
 	private $type;			// SECTION, TASK, VIDEO, or QUIZ
 	private $next = NULL;	// Next section
 	private $prev = NULL;	// Previous section
-	private $status;	    // Status of section
+	private $status = null;	// Status of section
+	private $look = null;   ///< When was first look at this section?
+	private $access = null; ///< When was the last access of this section?
 
 	private $numpoints = 0;	// Number of points for quiz
 }

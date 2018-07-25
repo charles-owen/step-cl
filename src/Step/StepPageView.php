@@ -5,6 +5,9 @@
  
 namespace CL\Step;
 
+use CL\Site\Site;
+use CL\Site\System\Server;
+
 /**
  * A single StepPageView object is instantiated as a view for
  * the main page of a step.
@@ -13,46 +16,62 @@ namespace CL\Step;
  *
 < ?php
 $reload = true;
-require_once "../lib/course.inc.php";	// For all pages
+require_once "../site.php";	// For all pages
 $view = new \Step\StepPageView($course, $user, 'circuit1');
 $view->protect();
 ? >
  */
 class StepPageView extends StepView {
-    /**
-     * Constructor
-     * @param \Course $course Course object
-     * @param \User $user User object
-     * @param $stepTag The step tag to create
-     */
-	public function __construct(\Course $course, \User $user, $stepTag) {
-		parent::__construct($course, $user, $stepTag);
+	/**
+	 * View constructor.
+	 * @param Site $site The Site object
+	 * @param string $assignTag Tag for the assignment to view
+	 * @param Server|null $server Optional dependency injection of Server
+	 * @param int $time Time we are viewing or null for time()	 */
+	public function __construct(Site $site, $assignTag, Server $server = null, $time=null) {
+		parent::__construct($site, $assignTag, $server, $time);
 
-        $step = $user->get_assignment($stepTag);
-		if($step === null) {
-			return;
-		}
-
-        // For the main page we always reload the step object.
-        // This ensures it will be current if the files change
-        $step->load(true);
-        $step->load_status($user);
+		// Load the user status in this assignment
+        $this->step->load_status($this->user);
 
         // Flag as looked at
-        $step->look($user);
+        $this->step->look($this->user);
 
-		$this->set_title($this->get_name());
-		$this->add_css("step/steppage.css");
+
 	}
 
-    /**
+	public function head() {
+		$html = parent::head();
+
+		$data = $this->step->data();
+		$data['sectionsTitle'] = 'The Assignment Sections';
+		$data['sectionsHeading'] = <<<HTML
+<p>These are the sections of the assignment. Click on each to go to the 
+section. For your convenience, a check mark will appear when you indicate that a 
+section is done. Some of the sections are very short.</p>
+<p>A link is available at the bottom of the page that allows you to view 
+the assignment in one page. This is useful for searching purposes, though 
+some functions may be limited.</p>
+HTML;
+
+		$root = $this->site->root;
+		$data['taskicon'] = $root . $this->appearance->image('taskicon', "/vendor/cl/course/img/taskicon.png");
+		$data['quizicon'] = $root . $this->appearance->image('quizicon', "/vendor/cl/course/img/quizicon.png");
+		$data['videoicon'] = $root . $this->appearance->image('videoicon', "/vendor/cl/course/img/videoicon.png");
+
+		$this->addJSON('cl-step-page', json_encode($data));
+		return $html;
+	}
+
+	/**
      * Create the page header section, including Interact! link if needed
      * @return string HTML for page header
      */
-    public function header() {
-		$html = parent::header();
-		$html .= $this->interact_link();
-		$html .= $this->warnings();
+    public function header($contentDiv = null, $nav='') {
+		$html = parent::header(false);
+		$html .= '<div class="content cl-steppage">';
+		//$html .= $this->interact_link();
+		//$html .= $this->warnings();
 		return $html;
 	}
 
@@ -60,8 +79,9 @@ class StepPageView extends StepView {
      * Create the page tail section, including Interact! component if needed
      * @return string HTML for the page tail
      */
-    public function tail() {
-		$html = $this->present_interact();
+    public function tail($contentDiv = null) {
+    	$html = '</div>';
+		//$html = $this->present_interact();
 		$html .= parent::tail();
 		return $html;
 	}
@@ -100,135 +120,94 @@ MSG;
 		return $html;
 	}
 
-	public function present() {
-		$html = <<<HTML
-<div class="section">
-<h2><a id="Sections">Assignment Sections</a></h2>
-<div>
-<p>These are the sections of the assignment. Click on each to go to the 
-section. For your convenience, a check mark will appear when you indicate that a 
-section is done. Some of the sections are very short.</p>
-<p>A link is available at the bottom of the page that allows you to view 
-the assignment in one page. This is useful for searching purposes, though 
-some functions may be limited.</p>
-HTML;
-
-		$html .= $this->sections() .
-			$this->grading_link() .
-			$this->all_link();
-
-		$html .= "</div></div>";
-		return $html;
+	public function present_sections() {
+		return '<div class="cl-step-sections"></div>';
 	}
 	
-	/** @brief Generate a list of tasks as a table 
+	/** Generate a list of tasks as a table
 	 * @returns Sections HTML */
 	public function sections() {
 		$id = uniqid();		// Generate a unique number
-		$formname = "f" . $id;
 		$pname = "p" . $id;
-		$tag = $this->step->get_tag();
+		$tag = $this->step->tag;
 		
 		$html = "";
-		
-		// f$id is the form name
-		// p$id = section - Jump to a section option hidden
-		// id = $id 
-		//echo "id=$id<br>";
 
-		$stepurl = get_libroot() . "/step/steppost.php";
-		$html .= '<form method="post" action="' . $stepurl . '" id="' . $formname . '">' . "\n";
-		
-		$html .= '<input name="formid" type="hidden" value="' . $id . '" />' . "\n";
-		$html .= '<input name="step" type="hidden" value="' . $tag . '" />' . "\n";
-		$html .= '<input id="' . $pname . '" name="' . $pname . '" type="hidden" value = ""/>' . "\n";
-	
 		$html .= <<<TASKS
 <table class="tasks" title="Table of Step Sections">
 <tr>
-<th>Completed</th>
+<th>&nbsp;</th>
 <th>Section</th>
-<th style="width:30px;">&nbsp;</th>
 <th>&nbsp;</th>
 </tr>
 TASKS;
 		
 		$sectionsinorder = $this->step->get_sectionsinorder();
 		foreach($sectionsinorder as $section) {
-			$html .=$this->taskrow($section, $formname, $pname);
+			$html .=$this->taskrow($section, $pname);
 		}
 		
-		$html .= "\n</table>\n</form>\n";
+		$html .= "\n</table>\n";
 		return $html;
 	}
 
 	/** Rows in the task table
 	 * This function is called by render_tasks once for each row */
-	private function taskrow(StepSection $section, $formname, $pname) {
+	private function taskrow(StepSection $section, $pname) {
 		// Is this task flagged as being completed?
 		$taskDone = $section->is_done();
 
-        $stepTag = $this->assignment->get_tag();
+        $tag = $this->assignment->tag;
 		$name = $section->get_name();
-		$sectionTag = $section->get_tag();
-		$libRoot = $this->course->get_libroot();
+		$sectionTag = $section->tag;
+		$root = $this->site->root;
+		$url = $root . $section->url;
 
-        //$href = "javascript:submitform('$formname', '$pname', '$tag')";
-        if($this->assignment->rewrite) {
-            $href = "$sectionTag";
-        } else {
-            $href = $libRoot . "/step/stepsection.php?step=$stepTag&amp;section=$sectionTag";
-        }
 		$html = '<tr><td class="stepcheck">';
 		if($taskDone) {
-			$html .= '<img alt="Check mark" height="14" src="' . $libRoot . '/images/check.png" width="19">';
+			$html .= '<img alt="Check mark" height="14" src="' . $root . '/vendor/cl/site/img/check.png" width="19">';
 		}
 		$html .= '</td>';
-		
+
 		$html .= '<td class="stepname">';
-		switch($section->get_type()) {
+		switch($section->type) {
 			case StepSection::TASK:
-				$iconurl = "$libRoot/images/taskicon.png";
+				$iconurl = $root . $this->appearance->image('taskicon', "/vendor/cl/course/img/taskicon.png");
 				$html .= '<img alt="Task" src="' . $iconurl . '">';
 				break;
 				
 			case StepSection::QUIZ:
-				$iconurl = "$libRoot/images/quizicon.png";
+				$iconurl = $root . $this->appearance->image('quizicon', "/vendor/cl/course/img/quizicon.png");
 				$html .= '<img alt="Quiz" src="' . $iconurl . '">';
 				break;
 			
 			case StepSection::VIDEO:
-				$iconurl = "$libRoot/images/videoicon.png";
+				$iconurl = $root . $this->appearance->image('videoicon', "/vendor/cl/course/img/videoicon.png");
 				$html .= '<img alt="Video" src="' . $iconurl . '">';
 				break;
 			
 			default:
-				if($this->step->get_iconurl() != NULL) {
-					$iconurl = $this->step->get_iconurl();
-					$html .= '<img alt="' . $this->step->get_iconalt() . '" src="' . $iconurl . '">';
+				if($this->step->iconurl != NULL) {
+					$iconurl = $this->step->iconurl;
+					$html .= '<img alt="' . $this->step->iconalt . '" src="' . $iconurl . '">';
 				}
 				break;
 		}
 		
 		$html .= "\n";
-		$html .= '<a href="' . $href . '" class="steplink">' . $name . '</a></td>';
-		$html .= '<td class="stepclear">';
-		if($taskDone) {
-			$html .= "\n";
-			$html .= '<input name="clearmain-' . $sectionTag . '" type="image" height="22" src="' . $libRoot . '/images/nocheck.png" width="21" alt="Uncheck Section" />';
-		}
+		$html .= '<a href="' . $url . '" class="steplink">' . $name . '</a></td>';
 		
-		$html .= '</td>';
-		
-		if($section->get_type() == StepSection::QUIZ) {
-            $quizTries = new \Quiz\QuizTries($this->course);
-            $correct = $quizTries->get_best($this->user, $this->step, $sectionTag);
-			$total = $section->get_numpoints();
-			if($correct !== null) {
-				$html .= "<td>" . $correct['correct'] . "/$total</td>";
-			} else {
-				$html .= "<td>-/$total</td>";
-			}
+		if($section->type == StepSection::QUIZ) {
+			$html .= '<td>&nbsp;</td>';
+
+//            $quizTries = new \Quiz\QuizTries($this->course);
+//            $correct = $quizTries->get_best($this->user, $this->step, $sectionTag);
+//			$total = $section->get_numpoints();
+//			if($correct !== null) {
+//				$html .= "<td>" . $correct['correct'] . "/$total</td>";
+//			} else {
+//				$html .= "<td>-/$total</td>";
+//			}
 			
 		} else {
 			$html .= '<td>&nbsp;</td>';
@@ -241,8 +220,8 @@ TASKS;
 	/** Display the link for the step as a single page 
 	 * @returns HTML for the single page link */
 	function all_link() {
-		$tag = $this->step->get_tag();
-        $libroot = $this->course->get_libroot();
+		$tag = $this->step->tag;
+        $libroot = $this->site->root;
 		return <<<TAIL
 <p class="center">This assignment is also available as a <a href="$libroot/step/stepall.php?step=$tag">
 single page</a>.</p>
@@ -265,18 +244,6 @@ HTML;
 	public function link($text, $link) {
 		return \Backto::link($text, $link, $this->get_title(), $this->get_url());
 	}
-	
-	/** @brief The step page title
-	 *
-	 * This is for the title tag */
-	function get_title() {
-		return get_course()->get_name() . ' ' . $this->get_name();
-	}
-	
-	/** @brief Get the URL for this page.
-	 * @return URL */
-	public function get_url() {
-		return $this->step->get_tag();
-	}
+
 	
 }

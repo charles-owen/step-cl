@@ -5,6 +5,9 @@
 
 namespace CL\Step;
 
+use CL\Users\User;
+use CL\Course\SectionStatus;
+
 /** Defines a step 
  *
  * Every step assignment has a tag associated with it. A tag is a
@@ -32,14 +35,20 @@ class Step extends \CL\Course\Assignment {
      *
      * rewrite - Set true if assignment uses .htaccess file to rewrite URLs
      *
-     * @param $key Options are: course, tag
-     * @return Course|mixed|null|string Property value
+     * @param string $key Options are: course, tag
+     * @return mixed Property value
      */
     public function __get($key)
     {
         switch ($key) {
             case 'rewrite':
                 return $this->rewrite;
+
+	        case 'iconurl':
+	        	return $this->iconurl;
+
+	        case 'iconalt':
+	        	return $this->iconalt;
 
             default:
                 return parent::__get($key);
@@ -52,8 +61,8 @@ class Step extends \CL\Course\Assignment {
      * rewrite - Set true if assignment uses .htaccess file to rewrite URLs
      *
      * Property set magic method
-     * @param $key Property name
-     * @param $value Value to set
+     * @param string $key Property name
+     * @param mixed $value Value to set
      */
     public function __set($key, $value) {
         switch($key) {
@@ -81,7 +90,9 @@ class Step extends \CL\Course\Assignment {
         }
 
 		// Add the override category
-		$this->grading->add_override();
+		if($this->grading !== null) {
+			$this->grading->add_override();
+		}
 
 		// Create the next/prev support
 		$cnt = count($this->sectionsinorder);
@@ -90,11 +101,11 @@ class Step extends \CL\Course\Assignment {
 			$secobj = $this->sectionsinorder[$j];
 			
 			if($j > 0) {
-				$secobj->set_prev($this->sectionsinorder[$j - 1]);
+				$secobj->prev = ($this->sectionsinorder[$j - 1]);
 			}
 			
 			if($j < ($cnt - 1)) {
-				$secobj->set_next($this->sectionsinorder[$j + 1]);
+				$secobj->next = ($this->sectionsinorder[$j + 1]);
 			}
 		}
 
@@ -102,17 +113,20 @@ class Step extends \CL\Course\Assignment {
 	}
 
 	/** Load the step status for a user */
-	public function load_status(\User $user) {
+	public function load_status(User $user) {
 		if($this->statusloaded) {
 			return;
 		}
 
-        $sectionStatus = new \Assignments\SectionStatus($this->course);
-        $statuses = $sectionStatus->get_statuses($user, $this);
+        $sectionStatus = new SectionStatus($this->site->db);
+        $statuses = $sectionStatus->get_statuses($user, $this->tag);
         foreach($statuses as $section => $status) {
             // This test deals with cases where a step page has been deleted.
             if(isset($this->sections[$section])) {
-                $this->sections[$section]->set_status($status['status']);
+                $this->sections[$section]->set_status(
+                	$status['status'],
+	                $status['look'],
+	                $status['access']);
             }
         }
 
@@ -186,31 +200,11 @@ class Step extends \CL\Course\Assignment {
 
 		return null;
 	}
-
-	/** Step name */
-	public function get_stepname() {return $this->get_name();}
 	
 	/** Array of section objects in order 
 	 * @retval array Array of Step::StepSection objects in order of presentation */
 	public function get_sectionsinorder() {return $this->sectionsinorder;}
-	
-	/** URL for an icon that does with step sections */
-	public function get_iconurl() {return $this->iconurl;}
-	
-	/** ALT text that goes with the step icon */
-	public function get_iconalt() {return $this->iconalt;}
-	
-	/** ID for a visit by a user to a step assignment */
-	public function get_stepuserid() {return $this->stepuserid;}
-	
-	/** The current step section 
-	 * This refers to a step section that is currently being
-	 * displayed to the user */	
-	public function get_current() {return $this->current;}
 
-	/** \copydoc get_current()
-	 * \param $current Step section to set as current */
-	public function set_current($current) {$this->current = $current;}
 	
 	/** Indicate we should add Skype links */
 	/*public function use_skype() {
@@ -268,8 +262,28 @@ class Step extends \CL\Course\Assignment {
     }
 
 	/**
+	 * Create data suitable for JSON to send to runtime
+	 * @return array
+	 */
+    public function data() {
+    	$sections = [];
+    	foreach($this->sectionsinorder as $section) {
+    		$sections[] = $section->data();
+	    }
+
+    	return [
+    	    'name'=>$this->name,
+		    'tag'=>$this->tag,
+		    'url'=>$this->site->root . '/' . $this->url,
+		    'sections'=>$sections,
+		    'iconurl'=>$this->iconurl,
+		    'iconalt'=>$this->iconalt
+	    ];
+    }
+
+	/**
 	 * Add any auxiliary views that are utilized by the page views
-	 * @param \ViewAux $aux Auxiliary view utilized by this page
+	 * @param ViewAux $aux Auxiliary view utilized by this page
 	 * @return ViewAux The ViewAux object we added
 	 */
 	public function add_view_aux(\ViewAux $aux) {
@@ -286,9 +300,6 @@ class Step extends \CL\Course\Assignment {
 	// Array from a section name to section
 	private $sections = array();	///< The step sections indexed by name
 	private $sectionsinorder = array(); ///< Array of sections in order of appearance
-	
-	// The current section
-	private $current = NULL;
 	
 	private $iconurl = NULL;		// URL for icon to use in section table
 	private $iconalt = NULL;		// Alt for icon in section table

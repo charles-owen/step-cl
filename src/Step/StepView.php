@@ -5,40 +5,39 @@
  
 namespace CL\Step;
 
-/** Base class for all views of a step assignment
+use CL\Site\Site;
+use CL\Site\System\Server;
+
+/**
+ * Base class for all views of a step assignment
  *
  * This is the base class for both the main page view and
- * views on section pages */
-class StepView extends \Assignments\AssignmentView {
-    /**
-     * Constructor
-     * @param \Course $course Course object
-     * @param \User $user Current User object
-     * @param $stepTag Tag for the step assignment
-     * @param $time The time of this view, default is time()
-     */
-	public function __construct(\Course $course, \User $user, $stepTag, $time=null) {
-		parent::__construct($course, $user, $stepTag, $time);
+ * views on section pages
+ */
+class StepView extends \CL\Course\AssignmentView {
+	/**
+	 * View constructor.
+	 * @param Site $site The Site object
+	 * @param string $assignTag Tag for the assignment to view
+	 * @param Server|null $server Optional dependency injection of Server
+	 * @param int $time Time we are viewing or null for time()	 */
+	public function __construct(Site $site, $assignTag, Server $server = null, $time=null) {
+		parent::__construct($site, $assignTag, $server, $time);
 
 		$this->step = $this->assignment;
-		$this->add_css("step/step.css");
-		$this->add_js("step/step.js");
+		$this->addCSS("vendor/cl/step/step.css");
+		$this->addJS('step');
 	}
 
     /**
      * Property get magic method
-     * @param $key Property name
-     * @property-read tablename The table name
-     * @property-read prefix The table prefix
-     * @return null|string
+     * @param string $key Property name
+     * @return mixed
      */
     public function __get($key) {
         switch($key) {
             case "step":
-                return $this->get_step();
-
-            case "tag":
-                return $this->step->get_tag();
+                return $this->step;
 
             default:
                 return parent::__get($key);
@@ -58,14 +57,7 @@ class StepView extends \Assignments\AssignmentView {
                 break;
         }
     }
-	
-	/** \brief Step object we are viewing */
-	public function get_step() {return $this->step;}
-	
-	public function get_tag() {return $this->step->get_tag(); }
-		
-	/** \brief Step name */
-	public function get_name() {return $this->step->get_name();}
+
 
     /**
      * Create a link to a section of the step assignment
