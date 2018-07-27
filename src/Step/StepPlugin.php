@@ -9,6 +9,7 @@ namespace CL\Step;
 use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Site\Router;
+use CL\Course\Assignments\AssignmentCategory;
 
 /**
  * Plugin class for the Step assignment Subsystem
@@ -48,9 +49,21 @@ class StepPlugin extends \CL\Site\Plugin {
 				return $view->whole();
 			});
 
+			$router->addRoute(['step', 'all', ':step'], function(Site $site, Server $server, array $params, array $properties, $time) {
+				$view = new StepSectionsAllView($site, $server, $properties, $time);
+				return $view->whole();
+			});
+
 			$router->addRoute(['api', 'step', '*'], function(Site $site, Server $server, array $params, array $properties, $time) {
 				$resource = new StepApi();
 				return $resource->apiDispatch($site, $server, $params, $properties, $time);
+			});
+		} else if($object instanceof AssignmentCategory) {
+			$object->extend('add_step', function(AssignmentCategory $assignmentCategory, $args) {
+				$tag = $args[0];
+				$name = $args[1];
+				$url = count($args) > 2 ? $args[2] : null;
+				return $assignmentCategory->add(new \CL\Step\Step($tag, $name, $url));
 			});
 		}
 	}

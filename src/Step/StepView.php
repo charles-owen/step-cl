@@ -25,6 +25,10 @@ class StepView extends \CL\Course\AssignmentView {
 		parent::__construct($site, $assignTag, $server, $time);
 
 		$this->step = $this->assignment;
+
+		// Load the user status in this assignment
+		$this->step->load_status($this->user);
+
 		$this->addCSS("vendor/cl/step/step.css");
 		$this->addJS('step');
 	}

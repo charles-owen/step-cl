@@ -31,17 +31,8 @@ class StepPageView extends StepView {
 	public function __construct(Site $site, $assignTag, Server $server = null, $time=null) {
 		parent::__construct($site, $assignTag, $server, $time);
 
-		// Load the user status in this assignment
-        $this->step->load_status($this->user);
-
         // Flag as looked at
         $this->step->look($this->user);
-
-
-	}
-
-	public function head() {
-		$html = parent::head();
 
 		$data = $this->step->data();
 		$data['sectionsTitle'] = 'The Assignment Sections';
@@ -60,8 +51,8 @@ HTML;
 		$data['videoicon'] = $root . $this->appearance->image('videoicon', "/vendor/cl/course/img/videoicon.png");
 
 		$this->addJSON('cl-step-page', json_encode($data));
-		return $html;
 	}
+
 
 	/**
      * Create the page header section, including Interact! link if needed

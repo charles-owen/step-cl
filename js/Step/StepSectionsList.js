@@ -1,6 +1,6 @@
-import {SectionStatus} from 'course-cl';
-import {TimeFormatter} from 'site-cl';
 import {StepSection} from './StepSection.js';
+import {TimeFormatter} from 'site-cl/js/TimeFormatter';
+import {SectionStatus} from 'course-cl/js/SectionStatus';
 import Dialog from 'dialog-cl';
 
 export let StepSectionsList = function(sel, data) {
@@ -19,6 +19,12 @@ export let StepSectionsList = function(sel, data) {
 
         let table = this.table();
         div.appendChild(table);
+
+        let p = document.createElement('P');
+        div.appendChild(p);
+        p.classList.add('center');
+        p.innerHTML = `This assignment is also available as a 
+<a href="${Site.root + '/cl/step/all/' + data.tag}" title="Single Page View">single page</a>.`;
     }
 
     this.table = function() {
@@ -47,7 +53,7 @@ export let StepSectionsList = function(sel, data) {
         td1.classList.add('stepcheck');
         tr.appendChild(td1);
 
-        let root = Site.info.root;
+        let root = Site.root;
 
         if(section.status === SectionStatus.DONE) {
             td1.innerHTML = `<img alt="Check mark" width="19" height="14" src="${root}/vendor/cl/site/img/check.png">`;
@@ -128,7 +134,7 @@ export let StepSectionsList = function(sel, data) {
                 break;
         }
 
-        td2.innerHTML = `${img} <a href="${section.url}" class="steplink">${section.name}</a>`;
+        td2.innerHTML = `${img} <a href="${section.url}" title="${section.name}" class="steplink">${section.name}</a>`;
 
         //
         // Quiz status
@@ -139,8 +145,6 @@ export let StepSectionsList = function(sel, data) {
 
         return tr;
     }
-
-    // '<p>Test</p>';
 
     this.start();
 }

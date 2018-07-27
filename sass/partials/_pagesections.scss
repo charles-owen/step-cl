@@ -21,7 +21,7 @@ div.cl-steppage {
     }
 
     >div {
-      background-color: $secondc; // #e8d9b5; // #f0fff0;
+      background-color: $step-section-list-background;
       @extend %shadow;
 
       border:1px solid black;

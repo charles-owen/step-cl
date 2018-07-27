@@ -3,7 +3,7 @@
  * Step page navigation features
  */
 
-import {SectionStatus} from 'course-cl';
+const SectionStatus = Course.SectionStatus;
 
 export let StepNav = function(sel, data) {
     let sectionTag = data.current;

@@ -28,20 +28,15 @@ class StepSectionView extends StepSectionsView {
             return;
         }
 
-		if($this->stepSection->type === StepSection::VIDEO) {
-			$this->add_video();
-		}
-
-        // Indicate that this section has been visited
-        $this->stepSection->flag_visited($this->user, $time);
-
-
 		// Open the section file
 		$this->file = $this->stepSection->openFile();
 		if($this->file === false) {
 			$server->redirect($site->root . '/' . $this->tag);
 			return;
 		}
+
+		// Indicate that this section has been visited
+		$this->stepSection->flag_visited($this->user, $time);
 
 		$shortname = $this->step->shortName;
 		$sectionname = $this->stepSection->name;
@@ -62,7 +57,6 @@ class StepSectionView extends StepSectionsView {
 	public function head() {
 		$html = parent::head();
 
-
 		$root = $this->course->root;
         $stepTag = $this->assignment->tag;
 
@@ -70,6 +64,7 @@ class StepSectionView extends StepSectionsView {
 <base href="$root/$stepTag/" />
 
 HTML;
+
 		if($this->file !== false) {
 			/*
 			 * Transfer everything between <head> and </head>
@@ -84,7 +79,7 @@ HTML;
 				}
 			}
 
-			$code = 'global $course; global $user; ?>';
+			$code = 'global $course; global $section; global $user; global $member; global $view; ?>';
 
 			// Read until </head>
 			while(($line = fgets($this->file)) != false) {
@@ -147,7 +142,7 @@ HTML;
 				}
 			}
 
-			$code = 'global $course; global $user; global $view; ?>';
+			$code = 'global $course; global $section; global $user; global $member; global $view; ?>';
 
 			// Read the rest until </body>
 			while(($line = fgets($this->file)) != false) {
@@ -308,15 +303,7 @@ HTML;
 	
 		return $html;
 	}
-	
-	/** Get the URL for this page.
-	 * @return URL */
-	public function get_url() {
-		$libroot = $this->course->get_libroot();
-		$steptag = $this->step->get_tag();
-		$sectiontag = $this->section->get_tag();
-		return "$libroot/step/stepsection.php?step=$steptag&section=$sectiontag";
-	}
+
 
 	/**
 	 * Create the Interact! view object for this view.

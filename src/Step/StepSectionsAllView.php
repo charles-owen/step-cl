@@ -4,38 +4,26 @@
  * sections of the Step on one page
  */
 
-namespace Step;
+namespace CL\Step;
+
+use CL\Site\Site;
+use CL\Site\System\Server;
 
 /** View of a Step assignment that displays all
  * sections of the Step on one page. */
 class StepSectionsAllView extends StepSectionsView {
-    /**
-     * Constructor
-     * @param \Course $course Course object
-     * @param \User $user Current User object
-     * @param $stepTag Tag for the step assignment
-     * @param $time The time of this view, default is time()
-     */
-	public function __construct(\Course $course, \User $user, $stepTag, $time=null) {
-		parent::__construct($course, $user, $stepTag, $time);
+	/**
+	 * View constructor.
+	 * @param Site $site The Site object
+	 * @param Server|null $server Optional dependency injection of Server
+	 * @param int $time Time we are viewing or null for time()	 */
+	public function __construct(Site $site, Server $server = null, array $properties, $time) {
+		parent::__construct($site, $properties['step'], $server, $time);
 
-		$name = $this->step->get_name();
-		$this->set_title($name);
+		$name = $this->step->name;
+		$this->title = $name;
 
-		$sectionsinorder = $this->step->get_sectionsinorder();
-
-		$video = false;
-		foreach($sectionsinorder as $section) {
-			if($section->get_type() === StepSection::VIDEO) {
-				$video = true;
-				break;
-			}
-		}
-
-		if($video) {
-			$this->add_video();
-		}
-
+		$sectionsinorder = $this->step->sectionsInOrder;
 
 		foreach($this->step->get_view_aux() as $aux) {
 			$this->add_aux($aux);
@@ -54,31 +42,30 @@ class StepSectionsAllView extends StepSectionsView {
 		$name = $this->step->get_name();
 		return "<h1>$name</h1>";
 	}
-	
-	/** Output the heading section for the HTML document */
-	public function heading() {
-		global $dir;
-		global $calendar;
-        global $user;
-        global $view;
 
-        $root = $this->course->get_root();
-        $libroot = $this->course->get_libroot();
-        $stepTag = $this->assignment->get_tag();
+	/**
+	 * Page head section content
+	 * @return string
+	 */
+	public function head() {
+		$html = parent::head();
 
-        $html = <<<HTML
+		$root = $this->course->root;
+		$stepTag = $this->assignment->tag;
+
+		$html .= <<<HTML
 <base href="$root/$stepTag/" />
 
 HTML;
 		
 		$foundincluded = array();
 				
-		$sectionsinorder = $this->step->get_sectionsinorder();
+		$sectionsinorder = $this->step->sectionsInOrder;
 		
-		foreach($sectionsinorder as $section) {
-			$tag = $section->get_tag();
-			$file = fopen($this->step->get_dir() . "/$tag.php", "r");
-		
+		foreach($sectionsinorder as $stepSection) {
+			$tag = $stepSection->tag;
+			$file = $stepSection->openFile();
+
 			/*
 			 * Transfer everything between <head> and </head>
 			 * except for the line automatically included by 
@@ -92,7 +79,7 @@ HTML;
 				}
 			}        
 		
-			$code = 'global $course; global $user; ?>';
+			$code = 'global $course; global $section; global $user; global $member; global $view;  ?>';
 			
 			// Read until </head>
 			while(($line = fgets($file)) != false) {
@@ -134,36 +121,29 @@ HTML;
 			
 			fclose($file);
 		}
-	
-		$html .= <<<STYLE
-<style>
-header {
-	margin-top:0px;
-}
-</style>	
-STYLE;
+
 		return $html;
 	}
 
-	/** Output the body of the HTML document */
-	function body() {
-		global $calendar;
-        global $view;
-
+	/**
+	 * Present the page body
+	 * @return string HTML
+	 */
+	public function present() {
 		$html = '';
 		
-		$steptag = $this->step->get_tag();
-		$shortname = $this->step->get_shortname();
-		$html .= '<p>';
+		$steptag = $this->step->tag;
+		$shortname = $this->step->shortName;
+		$html .= '<p class="small">';
 		$html .= \Backto::to($shortname, './', null);
-		$html .= "&nbsp;&nbsp;This page includes all sections for $shortname in a single page.</p>";
+		$html .= ".&nbsp;&nbsp;This page includes all sections for $shortname in a single page.</p>";
 	
-		$sectionsinorder = $this->step->get_sectionsinorder();
+		$sectionsinorder = $this->step->sectionsInOrder;
 		
-		foreach($sectionsinorder as $section) {
-			$name = $section->get_name();
+		foreach($sectionsinorder as $stepSection) {
+			$name = $stepSection->name;
 			
-			switch($section->get_type()) {
+			switch($stepSection->type) {
 				case StepSection::TASK:
 					$html .= "<h2>Task: $name</h2>";
 					break;
@@ -178,13 +158,13 @@ STYLE;
 					break;
 			}
 			
-			if($section->get_type() == StepSection::QUIZ) {
+			if($stepSection->type == StepSection::QUIZ) {
 				continue;
 			}
 		
-			$tag = $section->get_tag();
-			$file = fopen($this->step->get_dir() . "/$tag.php", "r");
-		
+			$tag = $stepSection->tag;
+			$file = $stepSection->openFile();
+
 			// Read until we get to <body> 
 			while(($line = fgets($file)) != false) {
 				if(stristr($line, "<body>")) {
@@ -192,7 +172,7 @@ STYLE;
 				}
 			}
 		
-			$code = 'global $course; global $user; ?>';
+			$code = 'global $course; global $section; global $user; global $member; global $view;  ?>';
 			
 			// Read the rest!
 			while(($line = fgets($file)) != false) {
@@ -212,28 +192,8 @@ STYLE;
 	
 		}
 		
-		$html .= \Backto::to($shortname, './');
+		$html .= '<p class="small">' . \Backto::to($shortname, './', null) . '</p>';
 		return $html;
 	}
 
-	/**
-	 * Create a link from this step page that will use autoback to return.
-	 * @param $text Text to display in the link
-	 * @param $link Page to link to
-	 */
-	public function link($text, $link) {
-		return \Backto::link($text, $link, $this->get_title(), $this->get_url());
-	}
-	
-		/** Get the URL for this page.
-	 * @return URL */
-	public function get_url() {
-		$steptag = $this->step->get_tag();
-		$libroot = $this->course->get_libroot();
-		return "$libroot/step/stepall.php?step=$steptag";
-	}
-
-
-
 }
-?>

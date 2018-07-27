@@ -60,8 +60,11 @@ class StepSection {
 				return $this->prev;
 
 			case 'url':
-				return $this->step->site->root . '/cl/step/section/' . $this->step->tag . '/' . $this->tag;
+				if($this->step->rewrite) {
+					return $this->step->site->root . '/' . $this->step->tag . '/' . $this->tag;
+				}
 
+				return $this->step->site->root . '/cl/step/section/' . $this->step->tag . '/' . $this->tag;
 
 			default:
 				$trace = debug_backtrace();

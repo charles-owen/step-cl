@@ -50,6 +50,9 @@ class Step extends \CL\Course\Assignment {
 	        case 'iconalt':
 	        	return $this->iconalt;
 
+	        case 'sectionsInOrder':
+	        	return $this->sectionsInOrder;
+
             default:
                 return parent::__get($key);
         }
@@ -95,17 +98,17 @@ class Step extends \CL\Course\Assignment {
 		}
 
 		// Create the next/prev support
-		$cnt = count($this->sectionsinorder);
+		$cnt = count($this->sectionsInOrder);
 		for($j=0; $j<$cnt; $j++)
 		{
-			$secobj = $this->sectionsinorder[$j];
+			$secobj = $this->sectionsInOrder[$j];
 			
 			if($j > 0) {
-				$secobj->prev = ($this->sectionsinorder[$j - 1]);
+				$secobj->prev = ($this->sectionsInOrder[$j - 1]);
 			}
 			
 			if($j < ($cnt - 1)) {
-				$secobj->next = ($this->sectionsinorder[$j + 1]);
+				$secobj->next = ($this->sectionsInOrder[$j + 1]);
 			}
 		}
 
@@ -151,7 +154,7 @@ class Step extends \CL\Course\Assignment {
 	 * \param $type The Step %Section type */
 	public function add_section($tag, $name, $type=StepSection::SECTION) {
 		$section = new StepSection($this, $tag, $name, $type);
-		$this->sectionsinorder[] = $section;
+		$this->sectionsInOrder[] = $section;
 		$this->sections[$tag] = $section;
 		return $section;
 	}
@@ -200,10 +203,6 @@ class Step extends \CL\Course\Assignment {
 
 		return null;
 	}
-	
-	/** Array of section objects in order 
-	 * @retval array Array of Step::StepSection objects in order of presentation */
-	public function get_sectionsinorder() {return $this->sectionsinorder;}
 
 	
 	/** Indicate we should add Skype links */
@@ -267,7 +266,7 @@ class Step extends \CL\Course\Assignment {
 	 */
     public function data() {
     	$sections = [];
-    	foreach($this->sectionsinorder as $section) {
+    	foreach($this->sectionsInOrder as $section) {
     		$sections[] = $section->data();
 	    }
 
@@ -299,7 +298,7 @@ class Step extends \CL\Course\Assignment {
 	
 	// Array from a section name to section
 	private $sections = array();	///< The step sections indexed by name
-	private $sectionsinorder = array(); ///< Array of sections in order of appearance
+	private $sectionsInOrder = array(); ///< Array of sections in order of appearance
 	
 	private $iconurl = NULL;		// URL for icon to use in section table
 	private $iconalt = NULL;		// Alt for icon in section table
