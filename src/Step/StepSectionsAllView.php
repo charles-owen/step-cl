@@ -16,6 +16,7 @@ class StepSectionsAllView extends StepSectionsView {
 	 * View constructor.
 	 * @param Site $site The Site object
 	 * @param Server|null $server Optional dependency injection of Server
+	 * @param array $properties Properties passed by the router.
 	 * @param int $time Time we are viewing or null for time()	 */
 	public function __construct(Site $site, Server $server = null, array $properties, $time) {
 		parent::__construct($site, $properties['step'], $server, $time);
@@ -141,25 +142,22 @@ HTML;
 		$sectionsinorder = $this->step->sectionsInOrder;
 		
 		foreach($sectionsinorder as $stepSection) {
+			$single = $stepSection->singlePagePresent();
+			if($single !== null) {
+				$html .= $single;
+				continue;
+			}
+
 			$name = $stepSection->name;
 			
 			switch($stepSection->type) {
 				case StepSection::TASK:
 					$html .= "<h2>Task: $name</h2>";
 					break;
-					
-				case StepSection::QUIZ:
-					$html .= "<h2>Quiz: $name</h2>";
-					$html .= '<p class="centerbox comp center">Quizzes are not available in single page view.</p>';
-					break;
-					
+
 				default:
 					$html .= "<h2>Section: $name</h2>";
 					break;
-			}
-			
-			if($stepSection->type == StepSection::QUIZ) {
-				continue;
 			}
 		
 			$tag = $stepSection->tag;

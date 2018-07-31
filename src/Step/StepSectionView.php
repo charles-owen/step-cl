@@ -9,12 +9,15 @@ namespace CL\Step;
 use CL\Site\Site;
 use CL\Site\System\Server;
 
-/** A view of a step assignment section (page) */
+/**
+ * A view of a step assignment section (page)
+ */
 class StepSectionView extends StepSectionsView {
 	/**
 	 * View constructor.
 	 * @param Site $site The Site object
 	 * @param Server|null $server Optional dependency injection of Server
+	 * @param array $properties Properties passed by the router.
 	 * @param int $time Time we are viewing or null for time()	 */
 	public function __construct(Site $site, Server $server = null, array $properties, $time) {
 		parent::__construct($site, $properties['step'], $server, $time);
@@ -28,6 +31,7 @@ class StepSectionView extends StepSectionsView {
             return;
         }
 
+
 		// Open the section file
 		$this->file = $this->stepSection->openFile();
 		if($this->file === false) {
@@ -40,16 +44,21 @@ class StepSectionView extends StepSectionsView {
 
 		$shortname = $this->step->shortName;
 		$sectionname = $this->stepSection->name;
-		$this->title = "$shortname: $sectionname";
+		$this->setTitle("$shortname: $sectionname");
 
 		foreach($this->step->get_view_aux() as $aux) {
 			$this->add_aux($aux);
 		}
 
+		// Does the section have a ViewAux?
+		$this->viewAux = $this->stepSection->viewAux();
+		if($this->viewAux !== null) {
+			$this->add_aux($this->viewAux);
+		}
+
 		$data = $this->step->data();
 		$data['current'] = $this->stepSection->tag;
 		$this->addJSON('cl-step', json_encode($data));
-
 	}
 	
 	/** A header block to use on every step section page
@@ -155,20 +164,13 @@ HTML;
 
 			fclose($this->file);
 
-
 			ob_start();
 			eval($code);
 			$html .= ob_get_contents();
 			ob_end_clean();
 
-			if($this->quizView !== null) {
-				$libroot = $this->course->get_libroot();
-
-				$assignmentTag = $this->step->get_tag();
-				$sectionTag = $this->section->get_tag();
-
-				$resultsLink = "$libroot/step/stepsection.php?step=$assignmentTag&section=$sectionTag&results";
-				$html .= $this->quizView->present($resultsLink);
+			if($this->viewAux !== null) {
+				$html .= $this->viewAux->present();
 			}
 
 		} else {
@@ -184,67 +186,25 @@ HTML;
 	}
 	
 	/** _set magic function.
-	 *
-	 * This implements the ability to define a
-	 * quiz function this way:
-	 * @code
-	 * $view->quiz = function(StepQuiz $quiz) {}
-	 * @endcode
-	 *
-	 * @param $key Name of the parameter to set
-	 * @param $value Value to set it to */
-	public function __set($key, $value) {
-		switch($key) {
-			case 'quiz':
-				$this->set_quiz($value);
-				break;
+     *
+	 * @param string $property Name of the parameter to set
+	 * @param mixed $value Value to set it to
+	 */
+	public function __set($property, $value) {
+		// See if there are any custom properties for this section type
+		if($this->stepSection->property($property, $value)) {
+			return;
+		}
 
+		switch($property) {
             default:
-                parent::__set($key, $value);
+                parent::__set($property, $value);
                 break;
 		}
 		
 	}
 	
-	/** Set the quiz function for this page
-	 * @param $function Quiz definition function */
-	public function set_quiz($function) {
 
-        if(is_callable($function)) {
-		    $sectionTag  = $this->section->get_tag();
-			$quiz = new \Quiz\Quiz($this->step, $sectionTag, $this->section->get_numpoints());
-			$this->quiz_set_complete_msg($quiz);
-
-			// We have a quiz, use the function to define it
-			$function($quiz);
-
-            // And create a view for the quiz
-			$this->quizView = $quiz->create_view($this->user, $this->session);
-        }
-	}
-
-	/** Set a quiz object for this page
-	 *
-	 * This allows for dependency injection of a custom, derived
-	 * quiz class.
-	 *  @param $quiz StepQuiz object
-	 */
-	public function set_quiz_obj(\Quiz\Quiz $quiz) {
-		$this->quiz_set_complete_msg($quiz);
-		$this->quizView = $quiz->create_view($this->user, $this->session);
-	}
-
-	private function quiz_set_complete_msg(\Quiz\Quiz $quiz) {
-		$stepTag = $this->step->get_tag();
-		$sectionTag  = $this->section->get_tag();
-		$libroot = $this->step->get_course()->get_libroot();
-
-		$msg = <<<HTML
-<p>Quiz is complete. You may now navigate to the next section or
-<a href="$libroot/step/stepsection.php?step=$stepTag&section=$sectionTag">retake the quiz.</a></p>
-HTML;
-		$quiz->set_complete_msg($msg);
-	}
 
 	/**
 	 * Create the code for the step navigation area
@@ -253,8 +213,6 @@ HTML;
 	private function stepNav() {
         $course = $this->step->course;
 		$root = $course->root;
-		$stepTag = $this->step->tag;
-		$sectionTag = $this->stepSection->tag;
 		$stepUrl = $this->step->url;
 
 		$prev = $this->stepSection->prev;
@@ -326,16 +284,9 @@ HTML;
 		return \Backto::link($text, $link, $this->title, $this->url);
 	}
 
-	/**
-	 * If this section has a quiz, return the quiz view.
-	 * @return null|QuizView Quiz view object
-	 */
-	public function get_quiz_view() {
-		return $this->quizView;
-	}
 
-	private $stepSection;       ///< The section of the step assignment we are viewing
-	private $file;			// Open file handle
+	private $stepSection;    ///< The section of the step assignment we are viewing
+	private $file;			///< Open file handle
 
-    private $quizView = null;   // StepQuizView object if this section is a quiz
+	private $viewAux;       ///< ViewAux object for this section
 }

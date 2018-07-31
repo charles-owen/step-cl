@@ -9,7 +9,7 @@ namespace CL\Step;
 use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Site\Router;
-use CL\Course\Assignments\AssignmentCategory;
+use CL\Course\AssignmentCategory;
 
 /**
  * Plugin class for the Step assignment Subsystem

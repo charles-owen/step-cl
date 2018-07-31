@@ -35,29 +35,29 @@ class StepView extends \CL\Course\AssignmentView {
 
     /**
      * Property get magic method
-     * @param string $key Property name
+     * @param string $property Property name
      * @return mixed
      */
-    public function __get($key) {
-        switch($key) {
+    public function __get($property) {
+        switch($property) {
             case "step":
                 return $this->step;
 
             default:
-                return parent::__get($key);
+                return parent::__get($property);
         }
     }
 
     /**
      * PHP set operation
      **
-     * @param $key Name of the parameter to set
+     * @param $property Name of the parameter to set
      * @param $value Value to set
      */
-    public function __set($key, $value) {
-        switch ($key) {
+    public function __set($property, $value) {
+        switch ($property) {
             default:
-                parent::__set($key, $value);
+                parent::__set($property, $value);
                 break;
         }
     }

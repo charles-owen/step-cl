@@ -6,5 +6,11 @@
 import {StepSectionsList} from './StepSectionsList.js';
 
 export let StepPage = function(data) {
-    new StepSectionsList('div.cl-step-sections', data);
+    // Is there any quiz data?
+    let en, quizResults = null;
+    if( (en = document.getElementById('cl-quiz-results')) !== null) {
+        quizResults = JSON.parse(en.textContent);
+    }
+
+    new StepSectionsList('div.cl-step-sections', data, quizResults);
 }

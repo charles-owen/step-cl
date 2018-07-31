@@ -3,12 +3,15 @@
  * Class that defines a Step assignment 
  */
 
+/// Classes in the Step assignment subsystem
 namespace CL\Step;
 
 use CL\Users\User;
 use CL\Course\SectionStatus;
+use CL\Site\ViewAux;
 
-/** Defines a step 
+/**
+ * Defines a step assignment
  *
  * Every step assignment has a tag associated with it. A tag is a
  * string up to 30 characters long such as 'step1' or 'design5'.
@@ -35,12 +38,12 @@ class Step extends \CL\Course\Assignment {
      *
      * rewrite - Set true if assignment uses .htaccess file to rewrite URLs
      *
-     * @param string $key Options are: course, tag
+     * @param string $property Options are: course, tag
      * @return mixed Property value
      */
-    public function __get($key)
+    public function __get($property)
     {
-        switch ($key) {
+        switch ($property) {
             case 'rewrite':
                 return $this->rewrite;
 
@@ -54,7 +57,7 @@ class Step extends \CL\Course\Assignment {
 	        	return $this->sectionsInOrder;
 
             default:
-                return parent::__get($key);
+                return parent::__get($property);
         }
     }
 
@@ -64,17 +67,17 @@ class Step extends \CL\Course\Assignment {
      * rewrite - Set true if assignment uses .htaccess file to rewrite URLs
      *
      * Property set magic method
-     * @param string $key Property name
+     * @param string $property Property name
      * @param mixed $value Value to set
      */
-    public function __set($key, $value) {
-        switch($key) {
+    public function __set($property, $value) {
+        switch($property) {
             case 'rewrite':
                 $this->rewrite = $value;
                 break;
 
             default:
-                parent::__set($key, $value);
+                parent::__set($property, $value);
                 break;
         }
 
@@ -149,15 +152,17 @@ class Step extends \CL\Course\Assignment {
 	 * This function is called from define.inc.php
 	 * for the step assignment and adds a section to 
 	 * the step.
-	 * \param $tag %Section tag
-	 * \param $name %Section name 
-	 * \param $type The Step %Section type */
+	 *
+	 * @param $tag %Section tag
+	 * @param $name %Section name
+	 * @param $type The Step %Section type
+	 * @return StepSection
+	 */
 	public function add_section($tag, $name, $type=StepSection::SECTION) {
 		$section = new StepSection($this, $tag, $name, $type);
-		$this->sectionsInOrder[] = $section;
-		$this->sections[$tag] = $section;
-		return $section;
+		return $this->add($section);
 	}
+
 	
 	/** Add a task section to the step
 	 *
@@ -180,22 +185,23 @@ class Step extends \CL\Course\Assignment {
 	public function add_video($tag, $name) {
 		return $this->add_section($tag, $name, StepSection::VIDEO);
 	}
-	
-	/** Add a quiz to the step.
-	 *
-	 * \param $tag Quiz tag
-	 * \param $name Quiz name
-	 * \param $numpoints Number of points for this quiz
+
+	/**
+	 * Add a StepSection object to the step
+	 * @param StepSection $section StepSection object to add
+	 * @return StepSection
 	 */
-	public function add_quiz($tag, $name, $numpoints) {
-		$section = $this->add_section($tag, $name, StepSection::QUIZ);
-		$section->set_numpoints($numpoints);
+	public function add(StepSection $section) {
+		$this->sectionsInOrder[] = $section;
+		$this->sections[$section->tag] = $section;
 		return $section;
 	}
 	
-	/** Get a reference to a section. 
-	 * \param $tag Section tag (short name)
-	 * \returns Section reference or null if tag is not a valid section tag */
+	/**
+	 * Get a reference to a section.
+	 * \param string $tag Section tag (short name)
+	 * \return Section reference or null if tag is not a valid section tag
+	 */
 	public function get_section($tag) {
 		if(isset($this->sections[$tag])) {
 			return $this->sections[$tag];
@@ -265,19 +271,17 @@ class Step extends \CL\Course\Assignment {
 	 * @return array
 	 */
     public function data() {
+    	$data = parent::data();
+
     	$sections = [];
     	foreach($this->sectionsInOrder as $section) {
     		$sections[] = $section->data();
 	    }
 
-    	return [
-    	    'name'=>$this->name,
-		    'tag'=>$this->tag,
-		    'url'=>$this->site->root . '/' . $this->url,
-		    'sections'=>$sections,
-		    'iconurl'=>$this->iconurl,
-		    'iconalt'=>$this->iconalt
-	    ];
+	    $data['sections'] = $sections;
+    	$data['iconurl'] = $this->iconurl;
+    	$data['iconalt'] = $this->iconalt;
+    	return $data;
     }
 
 	/**
@@ -285,11 +289,15 @@ class Step extends \CL\Course\Assignment {
 	 * @param ViewAux $aux Auxiliary view utilized by this page
 	 * @return ViewAux The ViewAux object we added
 	 */
-	public function add_view_aux(\ViewAux $aux) {
+	public function add_view_aux(ViewAux $aux) {
 		$this->viewaux[] = $aux;
 		return $aux;
 	}
 
+	/**
+	 * Get all ViewAux views attached to this view.
+	 * @return array All auxiliary views attached to this view
+	 */
 	public function get_view_aux() {
 		return $this->viewaux;
 	}

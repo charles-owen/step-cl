@@ -3,7 +3,7 @@ import {TimeFormatter} from 'site-cl/js/TimeFormatter';
 import {SectionStatus} from 'course-cl/js/SectionStatus';
 import Dialog from 'dialog-cl';
 
-export let StepSectionsList = function(sel, data) {
+export let StepSectionsList = function(sel, data, quizResults) {
 
     this.start = function() {
         let element = document.querySelector(sel);
@@ -32,7 +32,11 @@ export let StepSectionsList = function(sel, data) {
         table.title = "Table of Step Sections";
 
         let tr = document.createElement('TR');
-        tr.innerHTML = `<th>&nbsp;</th><th>Section</th><th>&nbsp;</th>`;
+        if(quizResults !== null) {
+            tr.innerHTML = `<th>&nbsp;</th><th>Section</th><th>&nbsp;</th>`;
+        } else {
+            tr.innerHTML = `<th>&nbsp;</th><th>Section</th>`;
+        }
         table.appendChild(tr);
 
         for(let section of data.sections) {
@@ -114,34 +118,27 @@ export let StepSectionsList = function(sel, data) {
         td2.classList.add('stepname');
         tr.appendChild(td2);
 
-
-        let img;
-        switch(section.type) {
-            case StepSection.TASK:
-                img = `<img alt="Task" src="${data.taskicon}">`;
-                break;
-
-            case StepSection.QUIZ:
-                img = `<img alt="Quiz" src="${data.quizicon}">`;
-                break;
-
-            case StepSection.VIDEO:
-                img = `<img alt="Video" src="${data.videoicon}">`;
-                break;
-
-            default:
-                img = `<img alt="${data.iconalt}" src="${data.iconurl}">`;
-                break;
-        }
+        const icon = data.icons[section.type];
+        const img = `<img alt="${icon.alt}" src="${icon.file}">`;
 
         td2.innerHTML = `${img} <a href="${section.url}" title="${section.name}" class="steplink">${section.name}</a>`;
 
         //
         // Quiz status
         //
-        let td3 = document.createElement('TD');
-        tr.appendChild(td3);
-        td3.innerHTML = '&nbsp;';
+        if(quizResults !== null) {
+            let td3 = document.createElement('TD');
+            tr.appendChild(td3);
+
+            let result = quizResults[section.tag];
+            if(result !== undefined) {
+                td3.innerHTML = result.points + '/' + result.maxpoints;
+            } else {
+                td3.innerHTML = '&nbsp;';
+            }
+
+        }
+
 
         return tr;
     }

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @file
+ * API Resource for /api/step
+ */
 namespace CL\Step;
 
 use CL\Site\Api\JsonAPI;
@@ -10,14 +13,26 @@ use CL\Course\Member;
 use CL\Course\SectionStatus;
 
 /**
- * API Resource for /api/course
+ * API Resource for /api/step
  */
 class StepApi extends \CL\Users\Api\Resource {
-
+	/**
+	 * StepApi constructor.
+	 */
 	public function __construct() {
 		parent::__construct();
 	}
 
+	/**
+	 * Dispatch the API routing.
+	 * @param Site $site The Site object
+	 * @param Server $server The Server object
+	 * @param array $params Parameters from the router
+	 * @param array $properties Properties extracted from the route
+	 * @param int $time Current time
+	 * @return JsonAPI response
+	 * @throws APIException If an error occurs.
+	 */
 	public function dispatch(Site $site, Server $server, array $params, array $properties, $time) {
 		if(count($params) < 1) {
 			throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
@@ -26,10 +41,6 @@ class StepApi extends \CL\Users\Api\Resource {
 		switch($params[0]) {
 			case 'status':
 				return $this->status($site, $server, $params, $time);
-
-//
-//			case 'tables':
-//				return $this->tables($site, $server, new CourseTables($site->db));
 		}
 
 		throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
