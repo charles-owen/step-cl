@@ -70,12 +70,22 @@ class StepView extends \CL\Course\AssignmentView {
      * @return string HTML for the link.
      */
     function section_link($sectionTag, $text) {
-        $libRoot = $this->course->get_libroot();
-        $stepTag = $this->step->get_tag();
-        $href = $libRoot . "/step/stepsection.php?step=$stepTag&amp;section=$sectionTag";
-        return <<<HTML
-<a href="$href">$text</a>
-HTML;
+    	$url = $this->sectionURL($sectionTag);
+        return "<a href=\"$url\">$text</a>";
+    }
+
+	/**
+	 * Create an absolute URL for a section of the step assignment.
+	 * @param string $sectionTag Tag for the section to link to
+	 * @return string URL
+	 */
+    function sectionURL($sectionTag) {
+	    if($this->step->rewrite) {
+		    return $this->step->site->root . '/' . $this->step->tag . '/' . $sectionTag;
+	    }
+
+	    return $this->step->site->root . '/cl/step/section/' . $this->step->tag . '/' . $sectionTag;
+
     }
 	
 	protected $course;  ///< Current course object

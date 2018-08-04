@@ -41,8 +41,7 @@ class Step extends \CL\Course\Assignment {
      * @param string $property Options are: course, tag
      * @return mixed Property value
      */
-    public function __get($property)
-    {
+    public function __get($property) {
         switch ($property) {
             case 'rewrite':
                 return $this->rewrite;

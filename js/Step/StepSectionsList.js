@@ -15,7 +15,7 @@ export let StepSectionsList = function(sel, data, quizResults) {
 
         let div = document.createElement('DIV');
         element.appendChild(div);
-        div.innerHTML = data.sectionsHeading;
+        div.innerHTML = data.sectionsBegin;
 
         let table = this.table();
         div.appendChild(table);
@@ -25,6 +25,10 @@ export let StepSectionsList = function(sel, data, quizResults) {
         p.classList.add('center');
         p.innerHTML = `This assignment is also available as a 
 <a href="${Site.root + '/cl/step/all/' + data.tag}" title="Single Page View">single page</a>.`;
+
+        const endDiv = document.createElement('DIV');
+        div.appendChild(endDiv);
+        endDiv.innerHTML = data.sectionsEnd;
     }
 
     this.table = function() {

@@ -4,8 +4,7 @@
 div.cl-steppage div.sections > div, div.cl-steppage div.cl-step-sections > div {
   -moz-box-shadow: 3px 3px 8px #ccc;
   -webkit-box-shadow: 3px 3px 8px #ccc;
-  box-shadow: 3px 3px 8px #ccc;
-  margin-bottom: 1em; }
+  box-shadow: 3px 3px 8px #ccc; }
 
 div.cl-steppage div.sections, div.cl-steppage div.cl-step-sections {
   position: relative;

@@ -8,6 +8,7 @@ namespace CL\Step;
 use CL\Site\Site;
 use CL\Site\System\Server;
 
+
 /**
  * A single StepPageView object is instantiated as a view for
  * the main page of a step.
@@ -22,47 +23,37 @@ class StepPageView extends StepView {
 	public function __construct(Site $site, $assignTag, Server $server = null, $time=null) {
 		parent::__construct($site, $assignTag, $server, $time);
 
+		// This object presents the sections of the step assignment.
+		$this->sections = new StepPageSections($this);
+
         // Flag as looked at
         $this->step->look($this->user);
 
-		$data = $this->step->data();
-		$data['sectionsTitle'] = 'The Assignment Sections';
-		$data['sectionsHeading'] = <<<HTML
-<p>These are the sections of the assignment. Click on each to go to the 
-section. For your convenience, a check mark will appear when you indicate that a 
-section is done. Some of the sections are very short.</p>
-<p>A link is available at the bottom of the page that allows you to view 
-the assignment in one page. This is useful for searching purposes, though 
-some functions may be limited.</p>
-HTML;
-
-		// Collect up all page icons
-		$icons = [];
-		foreach($this->step->sectionsInOrder as $section) {
-			$icons[$section->type] = $section->icon();
-		}
-
-		// Appearance map all of these
-		$data['icons'] = [];
-		$root = $this->site->root;
-
-		foreach($icons as $key => $icon) {
-			if($key === StepSection::SECTION && $this->step->iconurl !== null) {
-				$data['icons'][$key] = [
-					'file' => $this->step->iconurl,
-					'alt' => $this->step->iconalt !== null ? $this->step->iconalt : $icon['alt']
-				];
-			} else {
-				$data['icons'][$key] = [
-					'file' => $root . $this->appearance->image($icon['tag'], $icon['file']),
-					'alt' => $icon['alt']
-				];
-			}
-		}
-
-		$this->addJSON('cl-step-page', json_encode($data));
 		$site->amend($this);
 	}
+
+	/**
+	 * Property get magic method
+	 *
+	 * <b>Properties</b>
+	 * Property | Type | Description
+	 * -------- | ---- | -----------
+	 * sections | StepPageSections | Representation of the sections listing.
+	 *
+	 * @param string $property Property name
+	 * @return mixed
+	 */
+	public function __get($property) {
+		switch($property) {
+			case "sections":
+				return $this->sections;
+
+			default:
+				return parent::__get($property);
+		}
+	}
+
+
 
 
 	/**
@@ -127,7 +118,7 @@ MSG;
 	 * @return string HTML
 	 */
 	public function present_sections() {
-		return '<div class="cl-step-sections"></div>';
+		return $this->sections->present();
 	}
 
 	/**
@@ -137,8 +128,8 @@ MSG;
 	 * @return string HTML
 	 */
 	public function link($text, $link) {
-		return \Backto::link($text, $link, $this->get_title(), $this->get_url());
+		return \Backto::link($text, $link);
 	}
 
-	
+	private $sections;
 }
