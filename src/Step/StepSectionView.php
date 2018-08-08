@@ -56,7 +56,7 @@ class StepSectionView extends StepSectionsView {
 			$this->add_aux($this->viewAux);
 		}
 
-		$data = $this->step->data();
+		$data = $this->step->data(['status'=>true, 'url'=>true]);
 		$data['current'] = $this->stepSection->tag;
 		$this->addJSON('cl-step', json_encode($data));
 	}
@@ -232,11 +232,14 @@ END1;
 			$html .= $extra->html($this->section, $this->user);
 		}
 
-		$html .= <<<HTML
-<li><a class="cl-step-mark-completed"><span>Mark Completed</span>
+		/*
+		<li><a class="cl-step-mark-completed"><span>Mark Completed</span>
 <img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/checkmenu.png" width="24" /></a>
 </li><li><a class="cl-step-clear-completed"><span>Clear Completed</span>
 <img alt="Mark Incomplete" height="25" src="$root/vendor/cl/site/img/nocheckmenu.png" width="24" /></a>
+
+		*/
+		$html .= <<<HTML
 </li><li><a href="$prevUrl"><span>Previous Section</span>
 <img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/previcon.png" width="40" /></a>
 </li><li><a href="$nextUrl"><span>Next Section</span>
@@ -245,10 +248,10 @@ END1;
 <img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/checknext.png" width="40" /></a>
 </li><li class="cl-step-progress"></li>
 HTML;
-		//
+
 		// Appended menu items here
 		foreach($this->step->get_menuappend() as $extra) {
-			$html .= $extra->html($this->section, $this->user);
+			$html .= $extra->html($this->stepSection, $this->user);
 		}
 		
 		/*

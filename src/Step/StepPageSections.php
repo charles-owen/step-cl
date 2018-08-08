@@ -102,7 +102,7 @@ HTML;
 	public function present() {
 		$step = $this->view->step;
 
-		$data = $step->data();
+		$data = $step->data(['status'=>true, 'url'=>true]);
 		$data['sectionsTitle'] = $this->title;
 		$data['sectionsBegin'] = $this->begin;
 		$data['sectionsEnd'] = $this->end;

@@ -267,14 +267,15 @@ class Step extends \CL\Course\Assignment {
 
 	/**
 	 * Create data suitable for JSON to send to runtime
+	 * @param array $options Options that control what data is included
 	 * @return array
 	 */
-    public function data() {
-    	$data = parent::data();
+    public function data($options=[]) {
+    	$data = parent::data($options);
 
     	$sections = [];
     	foreach($this->sectionsInOrder as $section) {
-    		$sections[] = $section->data();
+    		$sections[] = $section->data($options);
 	    }
 
 	    $data['sections'] = $sections;

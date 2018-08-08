@@ -183,18 +183,28 @@ class StepSection {
 
 	/**
 	 * Create data suitable for JSON to send to client
+	 * @param array $options Options that control what data is included
 	 * @return array of data to send to client
 	 */
-	public function data() {
-		return [
+	public function data($options=[]) {
+
+		$data = [
 			'name'=>$this->name,
 			'type'=>$this->type,
 			'tag'=>$this->tag,
-			'status'=>$this->status,
-			'look'=>$this->look,
-			'access'=>$this->access,
-			'url'=>$this->__get('url')
 		];
+
+		if(!empty($options['status']) && $options['status']) {
+			$data['status'] = $this->status;
+			$data['look'] = $this->look;
+			$data['access'] = $this->access;
+		}
+
+		if(!empty($options['url']) && $options['url']) {
+			$data['url'] = $this->__get('url');
+		}
+
+		return $data;
 	}
 
 	/**
