@@ -222,7 +222,7 @@ HTML;
 		$nextUrl = $next !== null ? $next->url : $stepUrl;
 		
 		$html = <<<END1
-<div class="cl-stepnav-div"><nav class="cl-stepnav"><div><ul>
+<div class="cl-stepnav-div"><nav class="cl-stepnav cl-nav"><div><ul>
 <li><a href="$stepUrl"><span>Return to Step Page</span>
 <img alt="Return to Step" width="28" height="25" src="$root/vendor/cl/step/img/returnstep.png" /></a></li>
 END1;
