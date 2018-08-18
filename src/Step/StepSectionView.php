@@ -32,6 +32,7 @@ class StepSectionView extends StepSectionsView {
         }
 
 
+
 		// Open the section file
 		$this->file = $this->stepSection->openFile();
 		if($this->file === false) {
@@ -59,7 +60,52 @@ class StepSectionView extends StepSectionsView {
 		$data = $this->step->data(['status'=>true, 'url'=>true]);
 		$data['current'] = $this->stepSection->tag;
 		$this->addJSON('cl-step', json_encode($data));
+
+		if(get_class($this) === self::class) {
+			$site->amend($this);
+		}
 	}
+
+	/**
+	 * Property get magic method
+	 *
+	 * <b>Properties</b>
+	 * Property | Type | Description
+	 * -------- | ---- | -----------
+	 *
+	 * @param string $property Property name
+	 * @return mixed
+	 */
+	public function __get($property) {
+		switch($property) {
+			case 'sectionTag':
+				return $this->stepSection->tag;
+
+			default:
+				return parent::__get($property);
+		}
+	}
+
+
+	/** _set magic function.
+	 *
+	 * @param string $property Name of the parameter to set
+	 * @param mixed $value Value to set it to
+	 */
+	public function __set($property, $value) {
+		// See if there are any custom properties for this section type
+		if($this->stepSection->property($property, $value)) {
+			return;
+		}
+
+		switch($property) {
+			default:
+				parent::__set($property, $value);
+				break;
+		}
+
+	}
+
 	
 	/** A header block to use on every step section page
 	 * @returns string HTML */
@@ -131,7 +177,6 @@ HTML;
 		$nav = $this->stepNav();
 		$html = parent::header(false, $nav);
 		$html .= '<div class="content">';
-		//$html .= $this->interact_link();
 		//$html .= $this->warnings();
 		return $html;
 	}
@@ -180,29 +225,9 @@ HTML;
 HTML;
 		}
 
-		$html .= $this->present_interact();
-
 		return $html;
 	}
-	
-	/** _set magic function.
-     *
-	 * @param string $property Name of the parameter to set
-	 * @param mixed $value Value to set it to
-	 */
-	public function __set($property, $value) {
-		// See if there are any custom properties for this section type
-		if($this->stepSection->property($property, $value)) {
-			return;
-		}
 
-		switch($property) {
-            default:
-                parent::__set($property, $value);
-                break;
-		}
-		
-	}
 	
 
 
@@ -228,8 +253,8 @@ HTML;
 END1;
 
 		// Extra menu items here
-		foreach($this->step->get_menuextra() as $extra) {
-			$html .= $extra->html($this->section, $this->user);
+		foreach($this->step->menuExtra as $extra) {
+			$html .= $extra->html($this->stepSection, $this->user);
 		}
 
 		/*
@@ -250,7 +275,7 @@ END1;
 HTML;
 
 		// Appended menu items here
-		foreach($this->step->get_menuappend() as $extra) {
+		foreach($this->step->menuAppend as $extra) {
 			$html .= $extra->html($this->stepSection, $this->user);
 		}
 		

@@ -26,7 +26,15 @@ export let StepSectionsList = function(sel, data, quizResults) {
         p.innerHTML = `This assignment is also available as a 
 <a href="${Site.root + '/cl/step/all/' + data.tag}" title="Single Page View">single page</a>.`;
 
-        const endDiv = document.createElement('DIV');
+        if(data.gradeLink !== undefined) {
+	        p = document.createElement('p');
+	        div.appendChild(p);
+	        p.classList.add('grade');
+	        p.innerHTML = `<p class="grade"><img src="${Site.root}/vendor/cl/grades/img/grading.png" width="114" height="50" alt="Grading Icon">
+		    <a class="cl-autoback" href="${data.gradeLink}/${data.tag}">Assignment Grading Page</a></p>`;
+        }
+
+	    const endDiv = document.createElement('DIV');
         div.appendChild(endDiv);
         endDiv.innerHTML = data.sectionsEnd;
     }

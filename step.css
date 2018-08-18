@@ -1,34 +1,35 @@
 /** @file
  * Style sheet for step assignments
  */
-div.cl-steppage div.sections > div, div.cl-steppage div.cl-step-sections > div {
+div.cl-steppage div.cl-step-sections > div {
   -moz-box-shadow: 3px 3px 8px #ccc;
   -webkit-box-shadow: 3px 3px 8px #ccc;
   box-shadow: 3px 3px 8px #ccc; }
 
-div.cl-steppage div.sections, div.cl-steppage div.cl-step-sections {
+div.cl-steppage div.cl-step-sections {
   position: relative;
   clear: both;
   padding-left: 3pt;
-  padding-right: 3pt; }
-  div.cl-steppage div.sections h2, div.cl-steppage div.cl-step-sections h2 {
+  padding-right: 3pt;
+  margin-bottom: 1em; }
+  div.cl-steppage div.cl-step-sections h2 {
     font-family: sans-serif;
     font-size: 1.3em;
     border-bottom: 0;
     padding: 0;
     margin: 0 5pt -3px 5pt; }
-    div.cl-steppage div.sections h2 a, div.cl-steppage div.cl-step-sections h2 a {
+    div.cl-steppage div.cl-step-sections h2 a {
       color: #222222;
       text-decoration: none; }
-  div.cl-steppage div.sections > div, div.cl-steppage div.cl-step-sections > div {
+  div.cl-steppage div.cl-step-sections > div {
     background-color: #dce2df;
     border: 1px solid black;
     border-radius: 3pt;
     margin: 0px 1px 1px 1px;
     padding: 20px; }
-    div.cl-steppage div.sections > div p, div.cl-steppage div.cl-step-sections > div p {
+    div.cl-steppage div.cl-step-sections > div p {
       color: black; }
-    div.cl-steppage div.sections > div p:first-child, div.cl-steppage div.cl-step-sections > div p:first-child {
+    div.cl-steppage div.cl-step-sections > div p:first-child {
       margin-top: 0; }
 div.cl-steppage td.stepcheck {
   text-align: center;

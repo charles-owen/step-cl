@@ -8,7 +8,7 @@ namespace CL\Step;
 
 use CL\Users\User;
 use CL\Course\SectionStatus;
-use CL\Site\ViewAux;
+
 
 /**
  * Defines a step assignment
@@ -54,6 +54,12 @@ class Step extends \CL\Course\Assignment {
 
 	        case 'sectionsInOrder':
 	        	return $this->sectionsInOrder;
+
+	        case 'menuExtra':
+	        	return $this->menuExtra;
+
+	        case 'menuAppend':
+	        	return $this->menuappend;
 
             default:
                 return parent::__get($property);
@@ -219,10 +225,7 @@ class Step extends \CL\Course\Assignment {
 	
 	/** Add any extra menu options for the top-level menu 
 	 * @param $extra Extra menu option HTML */
-	public function menu_extra(StepMenuItem $extra) {$this->menuextra[] = $extra;}
-	
-	/** Extra content to add to the step menu */
-	public function get_menuextra() {return $this->menuextra; }
+	public function menu_extra(StepMenuItem $extra) {$this->menuExtra[] = $extra;}
 
     /**
      * Add a menu item that pops up a page using the popup function
@@ -233,22 +236,20 @@ class Step extends \CL\Course\Assignment {
     'UML Diagram', '../lib/images/umlmenu.png');
      * \endcode
      *
-     * @param $link Link to the page to pop up.
-     * @param $title Title for the menu option
-     * @param $img Link to image to display for the menu option
+     * @param string $link Link to the page to pop up.
+     * @param string $title Title for the menu option
+     * @param string $img Link to image to display for the menu option
      * @param int $width Width of the page to pop up
      * @param int $height Height of the page to pop up
      */
     public function add_popup_menu_item($link, $title, $img, $width=800, $height=900) {
-        $this->menu_extra(new \Step\StepPopupMenuItem($link, $title, $img, $width, $height));
+    	$this->menuExtra[] = new StepPopupMenuItem($link, $title, $img, $width, $height);
     }
 	
 	/** Add any appended menu options for the top-level menu 
-	 * @param $append appended menu option HTML */
+	 * @param StepMenuItem $append appended menu option HTML
+	 */
 	public function menu_append(StepMenuItem $append) {$this->menuappend[] = $append;}
-	
-	/** Appended content to add to the step menu */
-	public function get_menuappend() {return $this->menuappend;}
 
     /**
      * Add Skype to the Step toolbar
@@ -284,38 +285,21 @@ class Step extends \CL\Course\Assignment {
     	return $data;
     }
 
-	/**
-	 * Add any auxiliary views that are utilized by the page views
-	 * @param ViewAux $aux Auxiliary view utilized by this page
-	 * @return ViewAux The ViewAux object we added
-	 */
-	public function add_view_aux(ViewAux $aux) {
-		$this->viewaux[] = $aux;
-		return $aux;
-	}
 
-	/**
-	 * Get all ViewAux views attached to this view.
-	 * @return array All auxiliary views attached to this view
-	 */
-	public function get_view_aux() {
-		return $this->viewaux;
-	}
 
-	private $statusloaded = false;  ///< The step status is loaded
+	private $statusloaded = false;  // The step status is loaded
 	
 	// Array from a section name to section
-	private $sections = array();	///< The step sections indexed by name
-	private $sectionsInOrder = array(); ///< Array of sections in order of appearance
+	private $sections = [];	        // The step sections indexed by name
+	private $sectionsInOrder = [];  // Array of sections in order of appearance
 	
 	private $iconurl = NULL;		// URL for icon to use in section table
 	private $iconalt = NULL;		// Alt for icon in section table
 	
-	private $menuextra = array();	///< Extra content inserted into the top menu
-	private $menuappend = array();	///< Extra content appended to the top menu
+	private $menuExtra = [];	    // Extra content inserted into the top menu
+	private $menuappend = [];	    // Extra content appended to the top menu
 
-    private $loaded = false;        ///< Is the assignment loaded?
-	private $viewaux = array();		///< Any aux views to add to pages
+    private $loaded = false;        // Is the assignment loaded?
 
     private $rewrite = false;       ///< If true, directory uses RewriteRule to rewrite URL's.
 }

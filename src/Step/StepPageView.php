@@ -29,7 +29,10 @@ class StepPageView extends StepView {
         // Flag as looked at
         $this->step->look($this->user);
 
-		$site->amend($this);
+		// Call amend if this object is not subclassed.
+		if(get_class($this) === self::class) {
+			$site->amend($this);
+		}
 	}
 
 	/**
@@ -63,7 +66,6 @@ class StepPageView extends StepView {
     public function header($contentDiv = null, $nav='') {
 		$html = parent::header(false);
 		$html .= '<div class="content cl-steppage">';
-		//$html .= $this->interact_link();
 		//$html .= $this->warnings();
 		return $html;
 	}
@@ -74,14 +76,13 @@ class StepPageView extends StepView {
      */
     public function tail($contentDiv = null) {
     	$html = '</div>';
-		//$html = $this->present_interact();
 		$html .= parent::tail();
 		return $html;
 	}
 
 
 	/** Display any warnings about the step 
-	 * @returns HTML for warnings if they exist */
+	 * @returns string HTML for warnings if they exist */
 	public function warnings() {
 		if(!$this->user->is_staff()) {
 			return "";
@@ -123,8 +124,8 @@ MSG;
 
 	/**
 	 * Create a link from this step page that will use autoback to return.
-	 * @param $text Text to display in the link
-	 * @param $link Page to link to
+	 * @param string $text Text to display in the link
+	 * @param string $link Page to link to
 	 * @return string HTML
 	 */
 	public function link($text, $link) {

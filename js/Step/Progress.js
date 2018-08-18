@@ -24,6 +24,8 @@ export let Progress = function(sel, data) {
     const QUIZ = 'Q';		///< Indicates this section is a quiz
     const VIDEO = 'V';		///< Indicates this section is a video
 
+    const SPACING = 6;      ///< Spacing between images
+
     let loader = new ImageLoader();
     let left = loader.load(progressLeft);
     let right = loader.load(progressRight);
@@ -42,7 +44,7 @@ export let Progress = function(sel, data) {
             let canvas = document.createElement('CANVAS');
             li.appendChild(canvas);
             canvas.height = 25;
-            canvas.width = left.width + right.width + sc.width * data.sections.length;
+            canvas.width = left.width + right.width + SPACING * data.sections.length;
 
             let div = document.createElement('DIV');
             li.appendChild(div);
@@ -70,11 +72,11 @@ export let Progress = function(sel, data) {
                 }
 
                 if (section.tag === data.current) {
-                    curX = x;
+                    curX = x - 1;
                 }
 
                 context.drawImage(img, x, y);
-                x += img.width;
+                x += SPACING;
             }
 
             // Draw the current location
@@ -91,7 +93,7 @@ export let Progress = function(sel, data) {
                 div.style.display = 'block';
                 div.style.right = (li.offsetWidth - overX - 10) + 'px';
 
-                let s = (overX - left.width) / sc.width;
+                let s = (overX - left.width) / SPACING;
                 if(s < 0 || s >= data.sections.length) {
                     div.style.display = 'none';
                 } else {
@@ -101,7 +103,7 @@ export let Progress = function(sel, data) {
 
             canvas.addEventListener("click", (event) => {
                 overX = event.offsetX;
-                let s = (overX - left.width) / sc.width;
+                let s = (overX - left.width) / SPACING;
                 if(s >= 0 && s < data.sections.length) {
                     window.location = data.sections[Math.floor(s)].url;
                 }

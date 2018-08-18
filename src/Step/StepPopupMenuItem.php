@@ -1,17 +1,19 @@
 <?php
 /**
  * @file
- * @brief Class that implements an added pop-up menu item for step menus
+ * Class that implements an added pop-up menu item for step menus
  */
 
-namespace Step;
+namespace CL\Step;
+
+use CL\Users\User;
 
 /**
  * Class that implements an added pop-up menu item for step menus
  *
  * This is commonly used for things such as UML diagrams.
  */
-class StepPopupMenuItem extends StepMenuItem {
+class StepPopupMenuItem implements StepMenuItem {
 
     /**
      * Add a menu item that pops up a page using the popup function
@@ -37,15 +39,21 @@ class StepPopupMenuItem extends StepMenuItem {
     }
 
     /** Create the HTML for the menu item
-     * @param StepSection|The $section The Step section this is associated with
-     * @param \User $user User we are presenting for
+     * @param StepSection $section The Step section this is associated with
+     * @param User $user User we are presenting for
      * @return string HTML for the menu option
      */
-    public function html(StepSection $section, \User $user) {
-        return <<<HTML
-<li><a href="" onClick="return popup('$this->link', '$this->title', $this->width, $this->height)">
-<img alt="$this->title" height="25" src="$this->img" width="24"><span>$this->title</span></a></li>
-HTML;
+    public function html(StepSection $section, User $user) {
+    	$data = [
+    	    'link'=>$this->link,
+		    'title'=>$this->title,
+		    'img'=>$this->img,
+		    'width'=>$this->width,
+		    'height'=>$this->height
+	    ];
+
+	    $json = htmlspecialchars(json_encode($data), ENT_NOQUOTES);
+	    return '<li><span class="cl-popup-menu-item" style="display: none">' . $json . '</span></li>';
     }
 
     private $link;

@@ -32,35 +32,7 @@ HTML;
 
 		$this->end = '';
 	}
-	/**
-	 * Property get magic method
-	 *
-	 * <b>Properties</b>
-	 * Property | Type | Description
-	 * -------- | ---- | -----------
-	 * appearance | Appearance | The installed Appearance object.
-	 * autoback | bool | Page supports autoback
-	 * root | string | Root path for this site (with no trailing /)
-	 * site | Site | The Site object
-	 * title | string | The site title
-	 *
-	 * @param string $property Property name
-	 * @return mixed
-	 */
-	public function __get($property) {
-		switch($property) {
 
-
-			default:
-				$trace = debug_backtrace();
-				trigger_error(
-					'Undefined property ' . $property .
-					' in ' . $trace[0]['file'] .
-					' on line ' . $trace[0]['line'],
-					E_USER_NOTICE);
-				return null;
-		}
-	}
 
 	/**
 	 * Property set magic method
@@ -129,6 +101,11 @@ HTML;
 					'alt' => $icon['alt']
 				];
 			}
+		}
+
+		$site = $this->view->site;
+		if($site->installed('grades')) {
+			$data['gradeLink'] = $site->grades->gradeLink;
 		}
 
 		$this->view->addJSON('cl-step-page', json_encode($data));

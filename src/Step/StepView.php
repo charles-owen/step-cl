@@ -48,12 +48,16 @@ class StepView extends \CL\Course\AssignmentView {
         }
     }
 
-    /**
-     * PHP set operation
-     **
-     * @param $property Name of the parameter to set
-     * @param $value Value to set
-     */
+	/**
+	 * Property set magic method
+	 *
+	 * <b>Properties</b>
+	 * Property | Type | Description
+	 * -------- | ---- | -----------
+	 *
+	 * @param string $property Property name
+	 * @param mixed $value Value to set
+	 */
     public function __set($property, $value) {
         switch ($property) {
             default:
@@ -61,6 +65,7 @@ class StepView extends \CL\Course\AssignmentView {
                 break;
         }
     }
+
 
 
     /**
