@@ -87,8 +87,8 @@ export let StepSectionsList = function(sel, data, quizResults) {
 
             if(section.status !== null && section.status !== SectionStatus.NOTVISITED) {
                 content += `
-<p><span class="label">First Look: </span><span>${TimeFormatter.relative(new Date(section.look * 1000))}</span></p>
-<p><span class="label">Last Access: </span><span>${TimeFormatter.relative(new Date(section.access * 1000))}</span></p>`;
+<p><span class="label">First Look: </span><span>${TimeFormatter.relativeUNIX(section.look)}</span></p>
+<p><span class="label">Last Access: </span><span>${TimeFormatter.relativeUNIX(section.access)}</span></p>`;
             }
 
             content += `</div>`;

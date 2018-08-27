@@ -27,16 +27,13 @@ class StepSectionView extends StepSectionsView {
          */
         $this->stepSection = $this->step->get_section($properties['section']);
         if($this->stepSection === null) {
-	        $server->redirect($site->root . '/');
+	        $server->redirect($site->root . '/' . $this->tag);
             return;
         }
-
-
 
 		// Open the section file
 		$this->file = $this->stepSection->openFile();
 		if($this->file === false) {
-			$server->redirect($site->root . '/' . $this->tag);
 			return;
 		}
 
@@ -219,7 +216,7 @@ HTML;
 			}
 
 		} else {
-			$sectionTag = $this->section->get_tag();
+			$sectionTag = $this->stepSection->tag;
 			$html .= <<<HTML
 <p class="centerbox comp center">Assignment section <em>$sectionTag</em> not found.</p>
 HTML;

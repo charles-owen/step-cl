@@ -73,9 +73,8 @@ div.cl-stepnav-div {
     div.cl-stepnav-div nav .skype {
       font-size: 9px;
       text-align: center; }
-    div.cl-stepnav-div nav .skype a:link, div.cl-stepnav-div nav nav .skype a:visited {
-      color: white;
-      text-decoration: none; }
+    div.cl-stepnav-div nav .skype a:link, div.cl-stepnav-div nav .skype a:visited {
+      color: white; }
   div.cl-stepnav-div li.cl-step-progress {
     position: relative;
     border: 0;

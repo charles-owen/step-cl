@@ -176,9 +176,10 @@ class StepSection {
 	 * @return bool|resource File handle
 	 */
 	public function openFile() {
-		return @fopen($this->step->site->rootDir .
-			'/' . $this->step->url .
-			'/' . $this->tag . '.php', "r");
+		$name = $this->step->site->rootDir .
+			'/' . $this->step->rawUrl .
+			'/' . $this->tag . '.php';
+		return @fopen($name, "r");
 	}
 
 	/**
