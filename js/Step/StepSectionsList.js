@@ -31,7 +31,7 @@ export let StepSectionsList = function(sel, data, quizResults) {
 	        div.appendChild(p);
 	        p.classList.add('grade');
 	        p.innerHTML = `<p class="grade"><img src="${Site.root}/vendor/cl/grades/img/grading.png" width="114" height="50" alt="Grading Icon">
-		    <a class="cl-autoback" href="${data.gradeLink}/${data.tag}">Assignment Grading Page</a></p>`;
+		    <a class="cl-autoback" href="${Site.root}${data.gradeLink}/${data.tag}">Assignment Grading Page</a></p>`;
         }
 
 	    const endDiv = document.createElement('DIV');
