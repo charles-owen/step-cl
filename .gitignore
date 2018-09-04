@@ -2,7 +2,9 @@
 tests/config.php
 /html
 /vendor
-
+dwsync.xml
+_notes
+yarn-error.log
 
 # compiled output
 /dist
