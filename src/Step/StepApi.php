@@ -41,9 +41,28 @@ class StepApi extends \CL\Users\Api\Resource {
 		switch($params[0]) {
 			case 'status':
 				return $this->status($site, $server, $params, $time);
+
+			case 'statuses':
+				return $this->statuses($site, $params);
 		}
 
 		throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+	}
+
+	private function statuses(Site $site, array $params) {
+		$user = $this->isUser($site, Member::STAFF);
+
+		if(count($params) < 2) {
+			throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+		}
+
+		$statusTable = new SectionStatus($site->db);
+		$statuses = $statusTable->get_statuses_assignment($user->member->semester,
+			$user->member->sectionId, $params[1]);
+
+		$json = new JsonAPI();
+		$json->addData('step-statuses', 0, $statuses);
+		return $json;
 	}
 
 

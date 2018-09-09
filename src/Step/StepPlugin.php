@@ -10,6 +10,7 @@ use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Site\Router;
 use CL\Course\AssignmentCategory;
+use CL\Console\ConsoleView;
 
 /**
  * Plugin class for the Step assignment Subsystem
@@ -65,6 +66,8 @@ class StepPlugin extends \CL\Site\Plugin {
 				$url = count($args) > 2 ? $args[2] : null;
 				return $assignmentCategory->add(new \CL\Step\Step($tag, $name, $url));
 			});
+		} else if($object instanceof ConsoleView) {
+			$object->addJS('step');
 		}
 	}
 

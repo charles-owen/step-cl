@@ -282,6 +282,7 @@ class Step extends \CL\Course\Assignment {
 	    $data['sections'] = $sections;
     	$data['iconurl'] = $this->iconurl;
     	$data['iconalt'] = $this->iconalt;
+    	$data['step'] = true;
     	return $data;
     }
 
