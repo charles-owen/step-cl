@@ -63,20 +63,10 @@ class StepPageView extends StepView {
      * Create the page header section, including Interact! link if needed
      * @return string HTML for page header
      */
-    public function header($contentDiv = null, $nav='') {
+    public function header($contentDiv = true, $nav='') {
 		$html = parent::header(false);
 		$html .= '<div class="content cl-steppage">';
 		//$html .= $this->warnings();
-		return $html;
-	}
-
-    /**
-     * Create the page tail section, including Interact! component if needed
-     * @return string HTML for the page tail
-     */
-    public function tail($contentDiv = null) {
-    	$html = '</div>';
-		$html .= parent::tail();
 		return $html;
 	}
 
