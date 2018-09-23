@@ -22,7 +22,7 @@ class StepView extends \CL\Course\AssignmentView {
 	 * @param Server|null $server Optional dependency injection of Server
 	 * @param int $time Time we are viewing or null for time()	 */
 	public function __construct(Site $site, $assignTag, Server $server = null, $time=null) {
-		parent::__construct($site, $assignTag, $server, $time);
+		parent::__construct($site, $assignTag, [], $server, $time);
 
 		$this->step = $this->assignment;
 
