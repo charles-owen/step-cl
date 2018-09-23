@@ -19,12 +19,12 @@ abstract class StepSectionsView extends StepView {
 	 * @param int $time Time we are viewing or null for time()	 */
 	public function __construct(Site $site, $assignTag, Server $server = null, $time=null) {
 		parent::__construct($site, $assignTag, $server, $time);
-
     }
 	
 	/**
      * Present the appropriate page content for a submission
 	 * @param string $tag Submission tag
+	 * @return string HTML
      */
 	public function present_submission($tag) {
 		$html = '';

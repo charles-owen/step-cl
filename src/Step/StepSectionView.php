@@ -10,16 +10,18 @@ use CL\Site\Site;
 use CL\Site\System\Server;
 
 /**
- * A view of a step assignment section (page)
+ * A view of a step assignment section (page).
+ *
+ * This is instantiated automatically by StepPlugin, not used directly.
  */
 class StepSectionView extends StepSectionsView {
 	/**
 	 * View constructor.
 	 * @param Site $site The Site object
-	 * @param Server|null $server Optional dependency injection of Server
-	 * @param array $properties Properties passed by the router.
+	 * @param Server $server Optional dependency injection of Server
+	 * @param array $properties Properties passed by the router. Key 'step' is the section to view.
 	 * @param int $time Time we are viewing or null for time()	 */
-	public function __construct(Site $site, Server $server = null, array $properties, $time) {
+	public function __construct(Site $site, Server $server, array $properties, $time) {
 		parent::__construct($site, $properties['step'], $server, $time);
 
         /*

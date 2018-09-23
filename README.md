@@ -1,6 +1,7 @@
-# CourseLib Site user support component
+# CourseLib Site step assignment support component
 
-
+A CourseLib Step assignment is an assignment that has multiple
+pages than are typically completed sequentially.
 
 ***This is a work in progress***
 
@@ -9,7 +10,7 @@
 
 Copyright 2016-2018 Michigan State University
 
-Cirsim is released under the MIT license.
+CourseLib is released under the MIT license.
 
 * * *
 
