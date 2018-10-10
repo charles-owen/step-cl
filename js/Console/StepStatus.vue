@@ -18,6 +18,13 @@
                 <td v-for="section in assignment.sections" :class="looked(user, section.tag) ? '' : 'cl-step-nolook'" :title="title(user, section.name)">
                   <span v-html="status(user, section.tag)"></span></td>
               </tr>
+                <td class="cl-fixed-x" >&nbsp;</td>
+                <td class="cl-fixed-x cl-step-status-name">&nbsp;</td>
+                <td>{{looksTotal('look', fetcher.users)}}</td>
+                <td v-for="section in assignment.sections">{{sectionTotal(section.tag, fetcher.users)}}</td>
+              <tr>
+
+              </tr>
             </tbody>
           </table>
         </template>
@@ -58,6 +65,24 @@
 
             return '';
           },
+	        sectionTotal(sectionTag, users) {
+            let cnt = 0;
+            for(let user of users) {
+	            const s = this.results[user.member.id];
+	            if(s === undefined || s[sectionTag] === undefined) {
+		            // No look
+		            continue;
+	            }
+
+	            const t = s[sectionTag];
+
+	            if(t.status === DONE) {
+		            cnt++;
+	            }
+            }
+
+		        return cnt;
+	        },
           looked(user, sectionTag) {
 	          const s = this.results[user.member.id];
 	          if(s === undefined || s[sectionTag] === undefined) {
@@ -69,6 +94,24 @@
 
 	          return t.status !== NOTVISITED;
           },
+          looksTotal(sectionTag, users) {
+        		let cnt = 0;
+        		for(let user of users) {
+              const s = this.results[user.member.id];
+              if(s === undefined || s[sectionTag] === undefined) {
+                // No look
+                continue;
+              }
+
+              const t = s[sectionTag];
+
+              if(t.status !== NOTVISITED) {
+              	cnt++;
+              }
+            }
+
+            return cnt;
+          },
           title(user, sectionName) {
         		return user.name + '/' + sectionName;
           },
@@ -78,21 +121,6 @@
         		const row1 = div.querySelector('tr.vertical');
         		console.log(row1);
 	          div.addEventListener('scroll', (event) => {
-	          	// const col1s = div.querySelectorAll('td:first-child');
-	          	// for(let i=0; i<col1s.length; i++) {
-	          	// 	const col = col1s[i];
-	          	// 	col.style.transform = 'translate(' + div.scrollLeft + 'px, 0)';
-              // }
-
-	            // const col2s = div.querySelectorAll('td:nth-child(2)');
-	            // for(let i=0; i<col2s.length; i++) {
-		          //   const col = col2s[i];
-		          //   col.style.transform = 'translate(' + div.scrollLeft + 'px, 0)';
-	            // }
-
-	           // row1.style.transform = 'translate(0, ' + div.scrollTop + 'px)';
-
-
 	            const xs = div.querySelectorAll('.cl-fixed-x');
 	            for(let i=0; i<xs.length; i++) {
 		            const el = xs[i];
@@ -148,9 +176,6 @@
                 	console.log(error);
 	                this.$site.toast(this, error);
                 });
-
-
-
         }
     }
 </script>
