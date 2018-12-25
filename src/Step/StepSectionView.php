@@ -80,6 +80,9 @@ class StepSectionView extends StepSectionsView {
 			case 'sectionTag':
 				return $this->stepSection->tag;
 
+			case 'stepSection':
+				return $this->stepSection;
+
 			default:
 				return parent::__get($property);
 		}
@@ -213,6 +216,7 @@ HTML;
 			$html .= ob_get_contents();
 			ob_end_clean();
 
+			$this->viewAux = $this->stepSection->viewAux();
 			if($this->viewAux !== null) {
 				$html .= $this->viewAux->present();
 			}

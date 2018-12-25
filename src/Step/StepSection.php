@@ -13,6 +13,11 @@ use CL\Users\User;
  * A section can be a tutorial page, video, or a task page.
  * Other subsystems extend this class for custom features like
  * quizzes.
+ *
+ * @cond
+ * @property Step step
+ * @property string tag
+ * @endcond
  */
 class StepSection {
 	const SECTION = 'S';    ///< Indicates this section is a regular section
