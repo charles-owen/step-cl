@@ -34,13 +34,15 @@
 </template>
 
 <script>
-	import ConsoleComponentBase from 'console-cl/js/ConsoleComponentBase.vue';
 	import MembersFetcherComponent from 'course-cl/js/Console/Members/MembersFetcherComponent.vue';
   const NOTVISITED = 'N'; // Section has not been visited by the user
   const VISITED = 'V';	  // Section has been visited, but is not yet done
   const DONE = 'D';		    // Section is completed
 
-    export default {
+  const ConsoleComponentBase = Site.ConsoleComponentBase;
+
+
+  export default {
 	      extends: ConsoleComponentBase,
         props: ['assigntag'],
         data: function() {

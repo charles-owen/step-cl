@@ -1,15 +1,15 @@
 /**
- * @file
  * Step page navigation features
+ * @constructor
  */
-
-const SectionStatus = Course.SectionStatus;
-
 export let StepNav = function(sel, data) {
     let sectionTag = data.current;
     let assignTag = data.tag;
 
-    let install = (nav) => {
+	const SectionStatus = Site.site.SectionStatus;
+
+
+	let install = (nav) => {
         let element = nav.querySelector('.cl-step-mark-completed');
         if(element !== null) {
             element.addEventListener('click', (event) => {
