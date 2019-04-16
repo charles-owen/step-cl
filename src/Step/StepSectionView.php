@@ -260,21 +260,14 @@ END1;
 			$html .= $extra->html($this->stepSection, $this->user);
 		}
 
-		/*
-		<li><a class="cl-step-mark-completed"><span>Mark Completed</span>
-<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/checkmenu.png" width="24" /></a>
-</li><li><a class="cl-step-clear-completed"><span>Clear Completed</span>
-<img alt="Mark Incomplete" height="25" src="$root/vendor/cl/site/img/nocheckmenu.png" width="24" /></a>
-
-		*/
 		$html .= <<<HTML
-</li><li><a href="$prevUrl"><span>Previous Section</span>
-<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/previcon.png" width="40" /></a>
-</li><li><a href="$nextUrl"><span>Next Section</span>
-<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/nexticon.png" width="40" /></a>
-</li><li><a href="$nextUrl" class="cl-step-completed-next"><span>Mark Completed and Next Section</span>
-<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/checknext.png" width="40" /></a>
-</li><li class="cl-step-progress"></li>
+<li><a href="$prevUrl"><span>Previous Section</span>
+<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/previcon.png" width="40" /></a></li>
+<li><a href="$nextUrl"><span>Next Section</span>
+<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/nexticon.png" width="40" /></a></li>
+<li><a href="$nextUrl" class="cl-step-completed-next"><span>Mark Completed and Next Section</span>
+<img alt="Mark Complete" height="25" src="$root/vendor/cl/site/img/checknext.png" width="40" /></a></li>
+<li class="cl-step-progress"></li>
 HTML;
 
 		// Appended menu items here
