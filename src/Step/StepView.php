@@ -85,15 +85,18 @@ class StepView extends \CL\Course\AssignmentView {
 	 * @return string URL
 	 */
     function sectionURL($sectionTag) {
-	    if($this->step->rewrite) {
-		    return $this->step->site->root . '/' . $this->step->tag . '/' . $sectionTag;
+        $tag = str_replace('{semester}', $this->step->section->getSemesterLC(), $sectionTag);
+        $tag = str_replace('{section}', $this->step->section->id, $tag);
+
+        if($this->step->rewrite) {
+		    return $this->step->site->root . '/' . $this->step->tag . '/' . $tag;
 	    }
 
-	    return $this->step->site->root . '/cl/step/section/' . $this->step->tag . '/' . $sectionTag;
+	    return $this->step->site->root . '/cl/step/section/' . $this->step->tag . '/' . $tag;
 
     }
 	
-	protected $course;  ///< Current course object
-    protected $user;    ///< User for this step
-	protected $step;	//!< Reference to the current Step object
+	protected $course;  // Current course object
+    protected $user;    // User for this step
+	protected $step;	// Reference to the current Step object
 }

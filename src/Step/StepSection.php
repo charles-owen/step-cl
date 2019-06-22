@@ -284,6 +284,6 @@ class StepSection {
 	private $next = NULL;	// Next section
 	private $prev = NULL;	// Previous section
 	private $status = null;	// Status of section
-	private $look = null;   ///< When was the first look at this section?
-	private $access = null; ///< When was the last access of this section?
+	private $look = null;   // When was the first look at this section?
+	private $access = null; // When was the last access of this section?
 }

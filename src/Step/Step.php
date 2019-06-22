@@ -157,13 +157,19 @@ class Step extends \CL\Course\Assignment {
 	 * This function is called from define.inc.php
 	 * for the step assignment and adds a section to 
 	 * the step.
+     *
+     * The tag can include the substrings:
+     * {semester} - Replaced with the semester code in lower case
+     * {section} - Replaced with the section number
 	 *
-	 * @param $tag %Section tag
-	 * @param $name %Section name
-	 * @param $type The Step %Section type
+	 * @param string $tag %Section tag
+	 * @param string $name %Section name
+	 * @param string $type The Step %Section type
 	 * @return StepSection
 	 */
 	public function add_section($tag, $name, $type=StepSection::SECTION) {
+        $tag = str_replace('{semester}', $this->section->getSemesterLC(), $tag);
+        $tag = str_replace('{section}', $this->section->id, $tag);
 		$section = new StepSection($this, $tag, $name, $type);
 		return $this->add($section);
 	}
@@ -285,8 +291,6 @@ class Step extends \CL\Course\Assignment {
     	$data['step'] = true;
     	return $data;
     }
-
-
 
 	private $statusloaded = false;  // The step status is loaded
 	
