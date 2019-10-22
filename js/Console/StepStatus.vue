@@ -119,10 +119,8 @@
           },
           freezer() {
         		const div = this.$refs.container;
-        		console.log(div);
         		const row1 = div.querySelector('tr.vertical');
-        		console.log(row1);
-	          div.addEventListener('scroll', (event) => {
+	            div.addEventListener('scroll', (event) => {
 	            const xs = div.querySelectorAll('.cl-fixed-x');
 	            for(let i=0; i<xs.length; i++) {
 		            const el = xs[i];
@@ -155,7 +153,6 @@
 
 	        this.section = this.$store.getters['course/section'](member.semester, member.section);
 	        this.assignment = this.section.getAssignment(this.assigntag);
-	        console.log(this.assignment);
 	        this.$parent.setTitle(': ' + this.assignment.shortname + ' Status');
 
         },
