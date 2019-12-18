@@ -168,8 +168,7 @@ class Step extends \CL\Course\Assignment {
 	 * @return StepSection
 	 */
 	public function add_section($tag, $name, $type=StepSection::SECTION) {
-        $tag = str_replace('{semester}', $this->section->getSemesterLC(), $tag);
-        $tag = str_replace('{section}', $this->section->id, $tag);
+        $tag = $this->section->substituteLC($tag);
 		$section = new StepSection($this, $tag, $name, $type);
 		return $this->add($section);
 	}
