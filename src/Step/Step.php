@@ -163,11 +163,11 @@ class Step extends \CL\Course\Assignment {
      * {section} - Replaced with the section number
 	 *
 	 * @param string $tag %Section tag
-	 * @param string $name %Section name
+	 * @param string $name %Section name. If null, the title is loaded from the actual page.
 	 * @param string $type The Step %Section type
 	 * @return StepSection
 	 */
-	public function add_section($tag, $name, $type=StepSection::SECTION) {
+	public function add_section($tag, $name=null, $type=StepSection::SECTION) {
         $tag = $this->section->substituteLC($tag);
 		$section = new StepSection($this, $tag, $name, $type);
 		return $this->add($section);
@@ -180,8 +180,9 @@ class Step extends \CL\Course\Assignment {
 	 * for the step assignment and adds a task to 
 	 * the step.
 	 * \param $tag %Section tag
-	 * \param $name Task name */
-	public function add_task($tag, $name) {
+	 * \param $name Task name. If null, the title is loaded from the actual page.
+     */
+	public function add_task($tag, $name=null) {
 		return $this->add_section($tag, $name, StepSection::TASK);
 	}
 	
@@ -191,8 +192,9 @@ class Step extends \CL\Course\Assignment {
 	 * for the step assignment and adds a task to 
 	 * the step.
 	 * \param $tag %Section tag
-	 * \param $name Task name */
-	public function add_video($tag, $name) {
+	 * \param $name Video name. If null, the title is loaded from the actual page.
+     */
+	public function add_video($tag, $name=null) {
 		return $this->add_section($tag, $name, StepSection::VIDEO);
 	}
 

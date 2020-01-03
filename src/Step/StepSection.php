@@ -37,6 +37,27 @@ class StepSection {
 		$this->name = $name; 
 		$this->type = $type;
         $this->status = SectionStatus::NOTVISITED;
+
+        if($this->name === null) {
+            // If the name is not supplied (null), we load the
+            // page and find the title tag in it, using that
+            // page title as the acdtual title in the document.
+            $path = $this->path;
+
+            $dom = new \DOMDocument();
+            if(!@$dom->loadHTMLFile($path)) {
+                $this->name = "** File Not Found **";
+                return;
+            }
+
+            $titles = $dom->getElementsByTagName('title');
+            if($titles->length < 1) {
+                $this->name = "** &lt;title&gt; Tag Not Found **";
+                return;
+            }
+
+            $this->name = $titles[0]->nodeValue;
+        }
 	}
 
 	/**
@@ -67,6 +88,11 @@ class StepSection {
 
 			case 'next':
 				return $this->next;
+
+            case 'path':
+                return $this->step->site->rootDir .
+                    '/' . $this->step->rawUrl .
+                    '/' . $this->tag . '.php';
 
 			case 'prev':
 				return $this->prev;
