@@ -10,6 +10,7 @@ use CL\Site\Site;
 use CL\Site\System\Server;
 use CL\Site\Api\APIException;
 use CL\Course\Member;
+use CL\Course\Members;
 use CL\Course\SectionStatus;
 
 /**
@@ -39,7 +40,9 @@ class StepApi extends \CL\Users\Api\Resource {
 		}
 
 		switch($params[0]) {
-			case 'status':
+            case 'status':
+			    // /api/step/statuses/:assigntag
+                // /api/step/statuses/:assigntag/:memberid
 				return $this->status($site, $server, $params, $time);
 
 			case 'statuses':
@@ -52,17 +55,31 @@ class StepApi extends \CL\Users\Api\Resource {
 	private function statuses(Site $site, array $params) {
 		$user = $this->isUser($site, Member::STAFF);
 
-		if(count($params) < 2) {
-			throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
-		}
+		if(count($params) == 2) {
+            $statusTable = new SectionStatus($site->db);
+            $statuses = $statusTable->get_statuses_assignment($user->member->semester,
+                $user->member->sectionId, $params[1]);
 
-		$statusTable = new SectionStatus($site->db);
-		$statuses = $statusTable->get_statuses_assignment($user->member->semester,
-			$user->member->sectionId, $params[1]);
+            $json = new JsonAPI();
+            $json->addData('step-statuses', 0, $statuses);
+            return $json;
+        } else if(count($params) == 3) {
+		    $members = new Members($site->db);
+		    $member = $members->getAsUser($params[1]);
+		    if($member === null) {
+                throw new APIException("Member does not exist", APIException::GENERAL_ERROR);
+            }
 
-		$json = new JsonAPI();
-		$json->addData('step-statuses', 0, $statuses);
-		return $json;
+            $statusTable = new SectionStatus($site->db);
+            $statuses = $statusTable->get_statuses($member, $params[2]);
+
+            $json = new JsonAPI();
+            $json->addData('step-member-statuses', 0, $statuses);
+            $json->addData('user', 0, $member->data());
+            return $json;
+        } else {
+            throw new APIException("Invalid API Path", APIException::INVALID_API_PATH);
+        }
 	}
 
 

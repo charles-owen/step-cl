@@ -12,7 +12,7 @@
             </tr>
             <tbody>
               <tr v-for="user in fetcher.users">
-                <td class="cl-fixed-x" >{{user.userId}}</td>
+                <td class="cl-fixed-x" ><router-link :to="root + '/cl/console/step/status/' + assigntag + '/' + user.member.id">{{user.userId}}</router-link></td>
                 <td class="cl-fixed-x cl-step-status-name">{{user.name}}</td>
                 <td :class="looked(user, 'look') ? '' : 'cl-step-nolook'" :title="title(user, 'Looked')"><span v-html="status(user, 'look')"></span></td>
                 <td v-for="section in assignment.sections" :class="looked(user, section.tag) ? '' : 'cl-step-nolook'" :title="title(user, section.name)">
