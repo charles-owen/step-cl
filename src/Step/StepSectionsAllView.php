@@ -91,6 +91,7 @@ HTML;
 				// Because there may be many jquery versions...
 				// And we ignore any title tags in the step pages
 				if(stristr($line, 'course.css') ||
+                    stristr($line, 'site.css') ||
 					stristr($line, 'class.css') ||
 					stristr($line, 'course.min.js') ||
 					stristr($line, 'step/step.js') ||

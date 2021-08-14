@@ -145,6 +145,7 @@ HTML;
 				}
 
 				if(stristr($line, 'course.css') ||
+                    stristr($line, 'site.css') ||
 					stristr($line, 'class.css') ||
 					stristr($line, 'course.min.js') ||
 					stristr($line, 'step/step.js') ||
