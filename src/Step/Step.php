@@ -145,8 +145,8 @@ class Step extends \CL\Course\Assignment {
 	}
 	
 	/** The step icon 
-	 * \param $url URL for the step icon
-	 * \param $alt ALT text to display with the step icon */
+	 * @param $url URL for the step icon
+	 * @param $alt ALT text to display with the step icon */
 	function set_icon($url, $alt) {
 		$this->iconurl = $url;
 		$this->iconalt = $alt;
@@ -179,8 +179,8 @@ class Step extends \CL\Course\Assignment {
 	 * This function is called from define.inc.php 
 	 * for the step assignment and adds a task to 
 	 * the step.
-	 * \param $tag %Section tag
-	 * \param $name Task name. If null, the title is loaded from the actual page.
+	 * @param $tag %Section tag
+	 * @param $name Task name. If null, the title is loaded from the actual page.
      */
 	public function add_task($tag, $name=null) {
 		return $this->add_section($tag, $name, StepSection::TASK);
@@ -191,8 +191,8 @@ class Step extends \CL\Course\Assignment {
 	 * This function is called from define.inc.php 
 	 * for the step assignment and adds a task to 
 	 * the step.
-	 * \param $tag %Section tag
-	 * \param $name Video name. If null, the title is loaded from the actual page.
+	 * @param $tag %Section tag
+	 * @param $name Video name. If null, the title is loaded from the actual page.
      */
 	public function add_video($tag, $name=null) {
 		return $this->add_section($tag, $name, StepSection::VIDEO);
@@ -211,8 +211,8 @@ class Step extends \CL\Course\Assignment {
 	
 	/**
 	 * Get a reference to a section.
-	 * \param string $tag Section tag (short name)
-	 * \return Section reference or null if tag is not a valid section tag
+	 * @param string $tag Section tag (short name)
+	 * @return Section reference or null if tag is not a valid section tag
 	 */
 	public function get_section($tag) {
 		if(isset($this->sections[$tag])) {
