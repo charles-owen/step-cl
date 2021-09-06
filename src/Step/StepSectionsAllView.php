@@ -80,7 +80,7 @@ HTML;
 				}
 			}        
 		
-			$code = 'global $site; global $course; global $section; global $user; global $member; global $view;  ?>';
+			$code = $this->codeStart();
 			
 			// Read until </head>
 			while(($line = fgets($file)) != false) {
@@ -171,7 +171,7 @@ HTML;
 				}
 			}
 		
-			$code = 'global $site; global $course; global $section; global $user; global $member; global $view;  ?>';
+			$code = $this->codeStart();
 			
 			// Read the rest!
 			while(($line = fgets($file)) != false) {

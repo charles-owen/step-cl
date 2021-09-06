@@ -42,4 +42,18 @@ HTML;
 		return $html;
 	}
 
+    /**
+     * Create code that comes before any step assignment page is
+     * loaded. This is where globals are defined
+     * @return string PHP code
+     */
+    protected function codeStart() {
+        $code = 'global $site; global $course; global $section; global $user; global $member; global $view; ?>';
+
+        $file = $this->site->rootDir . '/' . $this->site->config . '/step-section.inc.php';
+        if(file_exists($file)) {
+            $code .= file_get_contents($file);
+        }
+        return $code;
+    }
 }
