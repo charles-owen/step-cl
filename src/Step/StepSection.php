@@ -15,6 +15,7 @@ use CL\Users\User;
  * quizzes.
  *
  * @cond
+ * @property boolean checkpoint True if the section represents a checkpoint
  * @property Step step
  * @property string tag
  * @endcond
@@ -97,6 +98,9 @@ class StepSection {
 			case 'prev':
 				return $this->prev;
 
+            case 'checkpoint':
+                return $this->checkpoint;
+
 			case 'step':
 				return $this->step;
 
@@ -138,6 +142,10 @@ class StepSection {
 	 */
 	public function __set($property, $value) {
 		switch($property) {
+            case 'checkpoint':
+                $this->checkpoint = $value;
+                break;
+
 			case 'next':
 				$this->next = $value;
 				break;
@@ -232,6 +240,10 @@ class StepSection {
 			$data['access'] = $this->access;
 		}
 
+        if($this->checkpoint) {
+            $data['checkpoint'] = true;
+        }
+
 		if(!empty($options['url']) && $options['url']) {
 			$data['url'] = $this->__get('url');
 		}
@@ -312,4 +324,5 @@ class StepSection {
 	private $status = null;	// Status of section
 	private $look = null;   // When was the first look at this section?
 	private $access = null; // When was the last access of this section?
+    private $checkpoint = false;    // True if section represents a checkpoint
 }
