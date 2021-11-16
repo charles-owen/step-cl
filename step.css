@@ -31,9 +31,17 @@ div.cl-steppage div.cl-step-sections {
       color: black; }
     div.cl-steppage div.cl-step-sections > div p:first-child {
       margin-top: 0; }
+div.cl-steppage tr:hover td {
+  background-color: #eeeeee; }
 div.cl-steppage td.stepcheck {
   text-align: center;
   width: 45px; }
+div.cl-steppage tr.cl-checkpoint td {
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 0; }
 
 div.cl-stepnav-div {
   min-height: 35px; }

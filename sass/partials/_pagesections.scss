@@ -40,10 +40,27 @@ div.cl-steppage {
     }
   }
 
+  tr:hover {
+    td {
+      background-color: #eeeeee;
+    }
+  }
+
 
   td.stepcheck {
     text-align: center;
     width: 45px;
+  }
+
+  tr.cl-checkpoint {
+    td {
+      background-color: black;
+      color: white;
+      text-align: center;
+      font-size: 0.7em;
+      padding: 0;
+    }
+
   }
 
 //   @media only screen and (max-device-width: $medium-width) {

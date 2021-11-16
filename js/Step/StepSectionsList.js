@@ -44,8 +44,10 @@ export let StepSectionsList = function(sel, data, quizResults) {
         table.title = "Table of Step Sections";
 
         let tr = document.createElement('TR');
+        let columns = 2;
         if(quizResults !== null) {
             tr.innerHTML = `<th>&nbsp;</th><th>Section</th><th>&nbsp;</th>`;
+            columns = 3;
         } else {
             tr.innerHTML = `<th>&nbsp;</th><th>Section</th>`;
         }
@@ -54,6 +56,13 @@ export let StepSectionsList = function(sel, data, quizResults) {
         for(let section of data.sections) {
             tr = this.taskRow(data, section);
             table.appendChild(tr);
+
+            if(section.checkpoint) {
+                let tr = document.createElement('TR');
+                tr.classList.add('cl-checkpoint')
+                tr.innerHTML = '<td colspan="' + columns + '">CHECKPOINT</td>'
+                table.appendChild(tr);
+            }
         }
 
         return table;
@@ -72,7 +81,7 @@ export let StepSectionsList = function(sel, data, quizResults) {
         let root = Site.root;
 
         if(section.status === SectionStatus.DONE) {
-            td1.innerHTML = `<img alt="Check mark" width="19" height="14" src="${root}/vendor/cl/site/img/check.png">`;
+            td1.innerHTML = `<img alt="Check mark" width="19" height="14" src="${root}/vendor/cl/site/img/check16.png">`;
         }
 
         td1.onclick = (event) => {
