@@ -2,7 +2,7 @@
   <div class="cl-step-statuses">
     <div ref="container">
       <membersfetcher :fetching="results === null">
-        <template slot-scope="fetcher">
+        <template v-slot="fetcher">
           <table class="tiny" v-if="results !== null">
             <tr class="vertical">
               <th class="cl-fixed-xy">User</th>
@@ -153,7 +153,7 @@
 
 	        this.section = this.$store.getters['course/section'](member.semester, member.section);
 	        this.assignment = this.section.getAssignment(this.assigntag);
-	        this.$parent.setTitle(': ' + this.assignment.shortname + ' Status');
+	        this.$root.setTitle(': ' + this.assignment.shortname + ' Status');
 
         },
         mounted() {

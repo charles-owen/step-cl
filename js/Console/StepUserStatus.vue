@@ -49,7 +49,7 @@
 
             this.section = this.$store.getters['course/section'](member.semester, member.section);
             this.assignment = this.section.getAssignment(this.assigntag);
-            this.$parent.setTitle(': ' + this.assignment.shortname + ' Status');
+            this.$root.setTitle(': ' + this.assignment.shortname + ' Status');
 
         },
         mounted() {
@@ -61,7 +61,7 @@
                         this.stepUser = response.getData('user').attributes;
                         this.results = response.getData('step-member-statuses').attributes;
 
-                        this.$parent.setTitle(': ' + this.stepUser.name + ' ' + this.assignment.shortname + ' Status');
+                        this.$root.setTitle(': ' + this.stepUser.name + ' ' + this.assignment.shortname + ' Status');
                     } else {
                         this.$site.toast(this, response);
                     }
