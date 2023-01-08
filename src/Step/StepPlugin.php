@@ -67,7 +67,7 @@ class StepPlugin extends \CL\Site\Plugin {
 				return $assignmentCategory->add(new \CL\Step\Step($tag, $name, $url));
 			});
 		} else if($object instanceof ConsoleView) {
-			$object->addJS('step');
+			$object->addJS('stepconsole');
 		}
 	}
 

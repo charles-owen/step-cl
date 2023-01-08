@@ -1,3 +1,4 @@
 {
-  "Step.js": "/cl/dist/step.dev.js"
+  "Step.js": "/cl/dist/step.dev.js",
+  "StepConsole.js": "/cl/dist/stepconsole.dev.js"
 }
